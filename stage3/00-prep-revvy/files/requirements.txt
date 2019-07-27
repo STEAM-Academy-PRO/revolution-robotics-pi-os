@@ -1,0 +1,2 @@
+git+https://github.com/vhermecz/pybleno.git@vhermecz-patch-1#egg=pybleno
+pyserial==3.4
