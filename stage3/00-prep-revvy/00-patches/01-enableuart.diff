@@ -1,8 +1,0 @@
---- a/rootfs/boot/config.txt
-+++ b/rootfs/boot/config.txt
-@@ -62,3 +62,5 @@
- 
- [all]
- #dtoverlay=vc4-fkms-v3d
-+
-+enable_uart=1
