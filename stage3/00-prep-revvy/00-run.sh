@@ -3,23 +3,34 @@
 echo " Start installing things that are unique to revvy "
 
 on_chroot << EOF
-echo "  Enable ttyS0 "
-systemctl mask serial-getty@ttyS0.service
-usermod -a -G tty pi
-
 echo "  Enable raw sockets for python for BT "
 setcap 'cap_net_raw,cap_net_admin+eip' \$(readlink -f \$(which python3))
 EOF
 
 echo "  Deploy python service "
-mkdir -p "${ROOTFS_DIR}/home/pi/revvy"
-install -m 755 files/revvy.py		"${ROOTFS_DIR}/home/pi/revvy/"
-install -m 644 files/revvy.service		"${ROOTFS_DIR}/etc/systemd/system/revvy.service"
-install -m 644 files/requirements.txt		"${ROOTFS_DIR}/home/pi/revvy/"
+mkdir -p "${ROOTFS_DIR}/home/pi/RevvyFramework"
+
+git clone https://github.com/RevolutionRobotics/RevvyLauncher.git
+cd RevvyLauncher
+find src -type f -exec install -D "{}" "${ROOTFS_DIR}/home/pi/RevvyFramework" \;
+cd ..
+echo "  Deleting launcher sources "
+rm -rf RevvyLauncher
+
+echo " Downloading latest framework source "
+git clone https://github.com/RevolutionRobotics/RevvyAlphaKit.git
+cd RevvyAlphaKit
+
+echo " Creating install package "
+python3 -m tools.create_package
+cp install/framework.data "${ROOTFS_DIR}/home/pi/RevvyFramework/data/ble/2.data"
+cp install/framework.meta "${ROOTFS_DIR}/home/pi/RevvyFramework/data/ble/2.meta"
+
+cd ..
+echo "  Deleting framework sources "
+rm -rf RevvyAlphaKit
 
 on_chroot << EOF
-echo "   Install python dependencies "
-pip3 install -r /home/pi/revvy/requirements.txt
-echo "   Enable python service "
-systemctl enable revvy
+echo "  Install the included package "
+python3 /home/pi/RevvyFramework/launch_revvy.py --install-only
 EOF
