@@ -7,6 +7,8 @@ echo "  Enable raw sockets for python for BT "
 setcap 'cap_net_raw,cap_net_admin+eip' \$(readlink -f \$(which python3))
 EOF
 
+install -m 644 files/revvy.service        "${ROOTFS_DIR}/etc/systemd/system/revvy.service"
+
 echo "  Deploy python service "
 mkdir -p "${ROOTFS_DIR}/home/pi/RevvyFramework"
 
@@ -33,4 +35,6 @@ rm -rf RevvyAlphaKit
 on_chroot << EOF
 echo "  Install the included package "
 python3 /home/pi/RevvyFramework/launch_revvy.py --install-only
+echo "  Enable Revvy service "
+systemctl enable revvy
 EOF

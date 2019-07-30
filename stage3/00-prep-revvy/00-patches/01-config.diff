@@ -1,8 +1,8 @@
 --- a/rootfs/boot/cmdline.txt
 +++ b/rootfs/boot/cmdline.txt
 @@ -1 +1 @@
--dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=ROOTDEV rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait
-+dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=ROOTDEV rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait modules-load=dwc2,g_ether
+-dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=ROOTDEV rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait quiet init=/usr/lib/raspi-config/init_resize.sh
++dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=ROOTDEV rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait modules-load=dwc2,g_ether quiet init=/usr/lib/raspi-config/init_resize.sh
 --- a/rootfs/boot/config.txt
 +++ b/rootfs/boot/config.txt
 @@ -43,7 +43,7 @@
@@ -21,5 +21,3 @@
 +
 +# Enable USB RNDS gadget
 +dtoverlay=dwc2
---- a/dev/null
-+++ b/rootfs/boot/ssh
