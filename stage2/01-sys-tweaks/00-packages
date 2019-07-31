@@ -4,8 +4,8 @@ build-essential manpages-dev bash-completion gdb pkg-config
 v4l-utils
 avahi-daemon
 hardlink ca-certificates curl
-fake-hwclock nfs-common usbutils
-libraspberrypi-dev libraspberrypi-doc libfreetype6-dev
+fake-hwclock usbutils
+libraspberrypi-dev libfreetype6-dev
 dosfstools
 dphys-swapfile
 raspberrypi-sys-mods
@@ -23,4 +23,3 @@ ssh-import-id
 rng-tools
 ethtool
 vl805fw
-ntfs-3g
