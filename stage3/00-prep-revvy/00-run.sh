@@ -17,6 +17,10 @@ echo "  Deploy python service "
 git clone https://github.com/RevolutionRobotics/RevvyLauncher.git
 echo "  Copying launcher to ${ROOTFS_DIR}/home/pi/RevvyFramework"
 cp -r RevvyLauncher/src "${ROOTFS_DIR}/home/pi/RevvyFramework"
+chmod 777 "${ROOTFS_DIR}/home/pi/RevvyFramework/data"
+chmod 777 "${ROOTFS_DIR}/home/pi/RevvyFramework/data/ble"
+chmod 777 "${ROOTFS_DIR}/home/pi/RevvyFramework/data/device"
+chmod 777 "${ROOTFS_DIR}/home/pi/RevvyFramework/installed"
 echo "  Deleting launcher sources "
 rm -rf RevvyLauncher
 
