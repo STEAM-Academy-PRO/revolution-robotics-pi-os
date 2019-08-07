@@ -17,11 +17,6 @@ echo "  Deploy python service "
 git clone https://github.com/RevolutionRobotics/RevvyLauncher.git
 echo "  Copying launcher to ${ROOTFS_DIR}/home/pi/RevvyFramework"
 cp -r RevvyLauncher/src "${ROOTFS_DIR}/home/pi/RevvyFramework"
-chown pi:pi "${ROOTFS_DIR}/home/pi/RevvyFramework"
-chmod 777 "${ROOTFS_DIR}/home/pi/RevvyFramework/data"
-chmod 777 "${ROOTFS_DIR}/home/pi/RevvyFramework/data/ble"
-chmod 777 "${ROOTFS_DIR}/home/pi/RevvyFramework/data/device"
-chmod 777 "${ROOTFS_DIR}/home/pi/RevvyFramework/installed"
 echo "  Deleting launcher sources "
 rm -rf RevvyLauncher
 
@@ -41,7 +36,8 @@ rm -rf RevvyAlphaKit
 
 on_chroot << EOF
 echo "  Setting permissions on data directory "
-chmod 777 -R /home/pi/RevvyFramework/data
+chown pi:pi -R "/home/pi/RevvyFramework"
+chmod 755 -R /home/pi/RevvyFramework/
 echo "  Install the included package "
 python3 /home/pi/RevvyFramework/launch_revvy.py --install-only
 echo "  Enable Revvy service "
