@@ -1,4 +1,10 @@
 os: linux
 dist: xenial
+language: generic
 sudo: required
-script: ./build.sh
+
+script:
+ - ./build.sh
+
+notifications:
+  slack: revolution-robotics:sXlaetqFuXuT3Vr4atwogEdK
