@@ -6,7 +6,7 @@ before_install:
  - sudo apt-get install -y quilt qemu-user-static debootstrap bsdtar
 
 script:
- - sudo ./build.sh
+ - ./build-docker.sh
 
 notifications:
   slack: revolution-robotics:sXlaetqFuXuT3Vr4atwogEdK
