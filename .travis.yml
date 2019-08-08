@@ -2,6 +2,8 @@ os: linux
 dist: xenial
 language: generic
 sudo: required
+before_install:
+ - sudo apt-get install -y quilt qemu-user-static debootstrap bsdtar
 
 script:
  - sudo ./build.sh
