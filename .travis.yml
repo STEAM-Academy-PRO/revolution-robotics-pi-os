@@ -4,7 +4,7 @@ language: generic
 sudo: required
 
 script:
- - ./build.sh
+ - sudo ./build.sh
 
 notifications:
   slack: revolution-robotics:sXlaetqFuXuT3Vr4atwogEdK
