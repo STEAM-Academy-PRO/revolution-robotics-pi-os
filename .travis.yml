@@ -7,6 +7,16 @@ before_install:
 
 script:
  - ./build-docker.sh
-
+ 
+deploy:
+  provider: releases
+  api_key: 
+    secret: "B7PY1l5QjhURUuCa6p47UTaxRejsRUZfdcFLmb5v1m4LbL5U+Yo88ByWFBq34w7mTzhi9QK87plwGWV0wPCTsBLavAAoRe5GzvT5E73FNsKUOZGlsgz1KilCh1VKS+Xo2PYCxaT+JSKZaSVCDpimuZFCez4rIClv9zkQrY6FgXWDgINIWpC4IYUl1IQCRNNc9jXUOxzcxsALD1hz/SVKtLcIqMsjCMckYvXQoc+UjFbjXb06v0WOYX3zxsSR+8u6tYykeJ7dnxxKiLWYUSGOaH5LQ2HM4sQ6PAxbE5YGFe84HrMGyOxFw4mWpDhOFqTrIex/9gt/XcRO+bBoVtFX6iaCoYlX5lnJopEuxWsZbhfT25ksIueac+R3m+UKeQTBboNgHsWnD1P6JCUXHpnsGd9M6wmeq+vhCQ43mqkEFcLCosn40Uv6Dxjzm8aNPcqvVuAmjI0Dd5xeQKqw2cn/wZzeg8W+o3ZUQjFTyi+IgMic5SuVjc/bA1KNF85o+EV0s3hf+0hp0j9SaX1fyLU3dNlEM+/zpaKnr44B+mNbUFfxTccHXfBQoI2Yx4wEpzwzvNUqZ2rYdRLFaVdOYXUOqtMxxC4AeWOLtR1knFIa4VNaRa2gS96SW75PkU2TGlnfAHGMVjGVJ8GlWs86xByJSF7SZ21uq6GqzWBthe4W9vU="
+  file_glob: true
+  file: deploy/*.zip
+  skip_cleanup: true
+  draft: true
+  overwrite: true
+    
 notifications:
   slack: revolution-robotics:sXlaetqFuXuT3Vr4atwogEdK
