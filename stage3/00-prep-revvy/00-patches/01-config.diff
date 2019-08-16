@@ -2,7 +2,7 @@
 +++ b/rootfs/boot/cmdline.txt
 @@ -1 +1 @@
 -dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=ROOTDEV rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait quiet init=/usr/lib/raspi-config/init_resize.sh
-+dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=ROOTDEV rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait modules-load=dwc2,g_ether quiet init=/usr/lib/raspi-config/init_resize.sh
++dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=ROOTDEV rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait modules-load=dwc2,g_ether quiet init=/usr/lib/raspi-config/init_resize.sh quiet
 --- a/rootfs/boot/config.txt
 +++ b/rootfs/boot/config.txt
 @@ -43,7 +43,7 @@
@@ -21,3 +21,8 @@
 +
 +# Enable USB RNDS gadget
 +dtoverlay=dwc2
++# Disable the splash screen
++disable_splash=1
++# Set the bootloader delay to 0 seconds. The default is 1s if not specified.
++boot_delay=0
+
