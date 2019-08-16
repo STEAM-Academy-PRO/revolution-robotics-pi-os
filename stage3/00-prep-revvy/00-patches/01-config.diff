@@ -25,4 +25,5 @@
 +disable_splash=1
 +# Set the bootloader delay to 0 seconds. The default is 1s if not specified.
 +boot_delay=0
-
++enable_uart=0
++dtoverlay=pi3-disable-wifi

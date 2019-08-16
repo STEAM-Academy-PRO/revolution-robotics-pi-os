@@ -8,6 +8,18 @@ setcap 'cap_net_raw,cap_net_admin+eip' \$(readlink -f \$(which python3))
 
 echo "  Enable i2c module "
 echo "i2c-dev" >> /etc/modules
+
+# disable swapping
+sudo dphys-swapfile swapoff
+sudo dphys-swapfile uninstall
+sudo update-rc.d dphys-swapfile remove
+sudo apt purge -y dphys-swapfile
+
+# disable services that are not needed
+sudo systemctl disable wpa_supplicant.conf
+sudo systemctl disable apt-daily.service
+sudo systemctl disable keyboard-setup.service
+sudo systemctl disable graphical.target
 EOF
 
 install -m 644 files/revvy.service        "${ROOTFS_DIR}/etc/systemd/system/revvy.service"
