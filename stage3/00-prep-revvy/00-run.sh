@@ -33,8 +33,8 @@ echo "  Deleting launcher sources "
 rm -rf RevvyLauncher
 
 echo " Downloading latest framework source "
-git clone https://github.com/RevolutionRobotics/RevvyAlphaKit.git
-cd RevvyAlphaKit
+git clone https://github.com/RevolutionRobotics/RevvyFramework.git
+cd RevvyFramework
 
 echo " Creating install package "
 python3 -m tools.create_package
@@ -44,7 +44,7 @@ cp install/framework.meta "${ROOTFS_DIR}/home/pi/RevvyFramework/data/ble/2.meta"
 
 cd ..
 echo "  Deleting framework sources "
-rm -rf RevvyAlphaKit
+rm -rf RevvyFramework
 
 on_chroot << EOF
 echo "  Setting permissions on data directory "
