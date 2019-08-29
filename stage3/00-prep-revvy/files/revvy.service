@@ -1,6 +1,7 @@
 [Unit]
 Description=Revvy service
-After=network.target
+After=bluetooth.target
+Requires=bluetooth.target
 StartLimitIntervalSec=0
 
 [Service]
