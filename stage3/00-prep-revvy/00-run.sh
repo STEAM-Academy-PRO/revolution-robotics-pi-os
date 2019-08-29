@@ -16,9 +16,14 @@ sudo update-rc.d dphys-swapfile remove
 sudo apt purge -y dphys-swapfile
 
 # disable services that are not needed
-sudo systemctl disbale systemd-timesyncd.service
-sudo systemctl disable wpa_supplicant.conf
+sudo systemctl disable systemd-update-utmp.service
+sudo systemctl mask systemd-update-utmp.service
 sudo systemctl disable apt-daily.service
+sudo systemctl mask apt-daily.service
+sudo systemctl disable apt-daily-upgrade.service
+sudo systemctl mask apt-daily-upgrade.service
+sudo systemctl disable systemd-timesyncd.service
+sudo systemctl disable wpa_supplicant.conf
 sudo systemctl disable keyboard-setup.service
 sudo systemctl disable graphical.target
 EOF
