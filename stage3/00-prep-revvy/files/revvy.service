@@ -2,6 +2,7 @@
 Description=Revvy service
 After=bluetooth.target
 Requires=bluetooth.target
+Before=dhcpcd.service
 StartLimitIntervalSec=0
 
 [Service]
