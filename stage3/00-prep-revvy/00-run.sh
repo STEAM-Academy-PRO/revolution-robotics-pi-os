@@ -22,9 +22,13 @@ sudo systemctl disable keyboard-setup.service
 sudo systemctl disable graphical.target
 EOF
 
-install -m 644 files/revvy.service        "${ROOTFS_DIR}/etc/systemd/system/revvy.service"
+echo "  Install production support script"
+install -m 755 files/serial.sh            "${ROOTFS_DIR}/home/pi/"
+echo "#!/bin/sh" > "${ROOTFS_DIR}/etc/rc.local"
+echo "/home/pi/serial.sh" >> "${ROOTFS_DIR}/etc/rc.local"
 
 echo "  Deploy python service "
+install -m 644 files/revvy.service        "${ROOTFS_DIR}/etc/systemd/system/revvy.service"
 
 git clone https://github.com/RevolutionRobotics/RevvyLauncher.git
 echo "  Copying launcher to ${ROOTFS_DIR}/home/pi/RevvyFramework"
