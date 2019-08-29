@@ -16,6 +16,7 @@ sudo update-rc.d dphys-swapfile remove
 sudo apt purge -y dphys-swapfile
 
 # disable services that are not needed
+sudo systemctl disbale systemd-timesyncd.service
 sudo systemctl disable wpa_supplicant.conf
 sudo systemctl disable apt-daily.service
 sudo systemctl disable keyboard-setup.service
