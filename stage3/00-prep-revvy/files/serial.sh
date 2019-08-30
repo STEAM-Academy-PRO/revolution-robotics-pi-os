@@ -1,7 +1,7 @@
 #!/bin/sh
 
 SERIAL=`cat /proc/cpuinfo | grep Serial`
-SERIAL=`echo $SERIAL | sed "s/Serial : //"`
+SERIAL=`echo $SERIAL | sed "s/Serial : 0*/Revvy_/"`
 
 if [ -f "/boot/serial_number" ]; then
     STORED=`sudo cat /boot/serial_number`
