@@ -30,8 +30,6 @@ EOF
 
 echo "  Install production support script"
 install -m 755 files/serial.sh            "${ROOTFS_DIR}/home/pi/"
-echo "#!/bin/sh" > "${ROOTFS_DIR}/etc/rc.local"
-echo "/home/pi/serial.sh" >> "${ROOTFS_DIR}/etc/rc.local"
 
 echo "  Deploy python service "
 install -m 644 files/revvy.service        "${ROOTFS_DIR}/etc/systemd/system/revvy.service"

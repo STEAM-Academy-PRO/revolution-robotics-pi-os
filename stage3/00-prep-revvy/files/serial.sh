@@ -12,4 +12,5 @@ fi
 if [ "${SERIAL}" != "${STORED}" ]; then
     echo "Updating serial number"
     echo "${SERIAL}" | sudo tee /boot/serial_number
+    sync /boot/serial_number
 fi
