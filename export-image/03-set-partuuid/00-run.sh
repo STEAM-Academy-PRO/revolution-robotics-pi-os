@@ -8,7 +8,7 @@ BOOT_PARTUUID="${IMGID}-01"
 ROOT_PARTUUID="${IMGID}-02"
 
 # NOTE: Boot partition is actually not needed, mounting it during system run time just takes extra seconds in setuptime
-sed -i "s/BOOTDEV/#PARTUUID=${BOOT_PARTUUID}/" "${ROOTFS_DIR}/etc/fstab"
+sed -i "s/BOOTDEV/PARTUUID=${BOOT_PARTUUID}/" "${ROOTFS_DIR}/etc/fstab"
 sed -i "s/ROOTDEV/PARTUUID=${ROOT_PARTUUID}/" "${ROOTFS_DIR}/etc/fstab"
 
 sed -i "s/ROOTDEV/PARTUUID=${ROOT_PARTUUID}/" "${ROOTFS_DIR}/boot/cmdline.txt"
