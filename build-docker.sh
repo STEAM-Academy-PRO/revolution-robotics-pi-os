@@ -43,7 +43,8 @@ else
 fi
 
 CONTAINER_NAME=${CONTAINER_NAME:-pigen_work}
-CONTINUE=${CONTINUE:-0}
+CONTINUEDEBUG=${CONTINUEDEBUG:-0}
+CONTINUE=${CONTINUE:-$CONTINUEDEBUG}
 PRESERVE_CONTAINER=${PRESERVE_CONTAINER:-0}
 
 if [ -z "${IMG_NAME}" ]; then
@@ -62,7 +63,7 @@ if [ "${CONTAINER_RUNNING}" != "" ]; then
 	exit 1
 fi
 if [ "${CONTAINER_EXISTS}" != "" ] && [ "${CONTINUE}" != "1" ]; then
-	echo "Container ${CONTAINER_NAME} already exists and you did not specify CONTINUE=1. Aborting."
+	echo "Container ${CONTAINER_NAME} already exists and you did not specify CONTINUE=1 or CONTINUEDEBUG=1. Aborting."
 	echo "You can delete the existing container like this:"
 	echo "  ${DOCKER} rm -v ${CONTAINER_NAME}"
 	exit 1
@@ -72,7 +73,18 @@ fi
 BUILD_OPTS="$(echo "${BUILD_OPTS:-}" | sed -E 's@\-c\s?([^ ]+)@-c /config@')"
 
 ${DOCKER} build -t pi-gen "${DIR}"
-if [ "${CONTAINER_EXISTS}" != "" ]; then
+if [ "${CONTAINER_EXISTS}" != "" ] && [ "${CONTINUEDEBUG}" == "1" ]; then
+        echo "Starting up container for debug session. You can connect with:"
+        echo "  ${DOCKER} exec -it ${CONTAINER_NAME}_cont bash"
+        trap 'echo "got CTRL+C... please wait 5s" && ${DOCKER} stop -t 5 ${CONTAINER_NAME}_cont' SIGINT SIGTERM
+        time ${DOCKER} run --rm --privileged \
+                --volume "${CONFIG_FILE}":/config:ro \
+                -e "GIT_HASH=${GIT_HASH}" \
+                --volumes-from="${CONTAINER_NAME}" --name "${CONTAINER_NAME}_cont" \
+                pi-gen \
+                tail -f /dev/null &
+        wait "$!"
+elif [ "${CONTAINER_EXISTS}" != "" ]; then
 	trap 'echo "got CTRL+C... please wait 5s" && ${DOCKER} stop -t 5 ${CONTAINER_NAME}_cont' SIGINT SIGTERM
 	time ${DOCKER} run --rm --privileged \
 		--volume "${CONFIG_FILE}":/config:ro \
