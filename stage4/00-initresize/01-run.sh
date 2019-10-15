@@ -1,4 +1,7 @@
 #!/bin/bash -e
 
-install -d				"${ROOTFS_DIR}/usr/lib/revvy-config"
-install -m 755 files/init_resize.sh	"${ROOTFS_DIR}/usr/lib/revvy-config/"
+on_chroot << EOF
+systemctl disable resize2fs_once
+update-rc.d resize2fs_once remove
+rm /etc/init.d/resize2fs_once
+EOF

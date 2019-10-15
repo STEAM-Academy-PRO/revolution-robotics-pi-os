@@ -11,7 +11,7 @@ mkdir -p "${ROOTFS_DIR}"
 
 BOOT_SIZE="$((256 * 1024 * 1024))"
 ROOT_SIZE=$(du --apparent-size -s "${EXPORT_ROOTFS_DIR}" --exclude var/cache/apt/archives --exclude boot --exclude home/pi/RevvyFramework/user --block-size=1 | cut -f 1)
-DATA_SIZE="$((64 * 1024 * 1024))"
+DATA_SIZE="$((1024 * 1024 * 1024))"
 
 # All partition sizes and starts will be aligned to this size
 ALIGN="$((4 * 1024 * 1024))"
