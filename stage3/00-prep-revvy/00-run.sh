@@ -59,6 +59,8 @@ echo "  Deleting framework sources "
 rm -rf RevvyFramework
 
 on_chroot << EOF
+sudo pip3 install pyqrcode
+
 echo "  Setting permissions on data directory "
 chown pi:pi -R "/home/pi/RevvyFramework"
 chmod 755 -R /home/pi/RevvyFramework/
