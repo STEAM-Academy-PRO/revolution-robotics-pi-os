@@ -30,8 +30,6 @@ sudo systemctl disable systemd-timesyncd.service
 sudo systemctl disable wpa_supplicant.conf
 sudo systemctl disable keyboard-setup.service
 sudo systemctl disable graphical.target
-
-sudo pip3 install pyqrcode
 EOF
 
 echo "  Install production support script"
