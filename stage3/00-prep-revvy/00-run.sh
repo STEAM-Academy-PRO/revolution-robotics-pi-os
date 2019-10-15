@@ -50,9 +50,9 @@ cd RevvyFramework
 
 echo " Creating install package "
 python3 -m tools.create_package
-echo "  Copying install files to ${ROOTFS_DIR}/home/pi/RevvyFramework/data/ble/"
-cp install/framework.data "${ROOTFS_DIR}/home/pi/RevvyFramework/data/ble/2.data"
-cp install/framework.meta "${ROOTFS_DIR}/home/pi/RevvyFramework/data/ble/2.meta"
+echo "  Copying install files to ${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/"
+cp install/framework.data "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.data"
+cp install/framework.meta "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.meta"
 
 cd ..
 echo "  Deleting framework sources "
@@ -62,8 +62,11 @@ on_chroot << EOF
 echo "  Setting permissions on data directory "
 chown pi:pi -R "/home/pi/RevvyFramework"
 chmod 755 -R /home/pi/RevvyFramework/
+
+mkdir /home/pi/RevvyFramework/default_packages
+
 echo "  Install the included package "
-python3 /home/pi/RevvyFramework/launch_revvy.py --install-only
+python3 /home/pi/RevvyFramework/launch_revvy.py --install-only --install-default
 echo "  Enable Revvy service "
 systemctl enable revvy
 EOF
