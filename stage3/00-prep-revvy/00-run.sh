@@ -30,6 +30,8 @@ sudo systemctl disable systemd-timesyncd.service
 sudo systemctl disable wpa_supplicant.conf
 sudo systemctl disable keyboard-setup.service
 sudo systemctl disable graphical.target
+
+sudo pip3 install pyqrcode
 EOF
 
 echo "  Install production support script"
@@ -51,6 +53,16 @@ cd RevvyFramework
 echo " Creating install package "
 python3 -m tools.create_package
 echo "  Copying install files to ${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/"
+
+on_chroot << EOF
+echo "  Setting permissions on data directory "
+chown pi:pi -R "/home/pi/RevvyFramework"
+chmod 755 -R /home/pi/RevvyFramework/
+
+mkdir /home/pi/RevvyFramework/default_packages
+mkdir -p /home/pi/RevvyFramework/user/ble
+EOF
+
 cp install/framework.data "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.data"
 cp install/framework.meta "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.meta"
 
@@ -59,14 +71,6 @@ echo "  Deleting framework sources "
 rm -rf RevvyFramework
 
 on_chroot << EOF
-sudo pip3 install pyqrcode
-
-echo "  Setting permissions on data directory "
-chown pi:pi -R "/home/pi/RevvyFramework"
-chmod 755 -R /home/pi/RevvyFramework/
-
-mkdir /home/pi/RevvyFramework/default_packages
-
 echo "  Install the included package "
 python3 /home/pi/RevvyFramework/launch_revvy.py --install-only --install-default
 echo "  Enable Revvy service "
