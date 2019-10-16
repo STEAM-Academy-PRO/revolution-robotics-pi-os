@@ -5,7 +5,7 @@ StartLimitIntervalSec=0
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/qrencode -t ANSI "Revvy_`cat /proc/cpuinfo | sed -n 's/Serial[^0]*0*//p'`" -o /etc/issue
+ExecStart=/usr/bin/qrencode -t ANSI -m 2 "Revvy_`cat /proc/cpuinfo | sed -n 's/Serial[^0]*0*//p'`" -o /etc/issue
 
 [Install]
 WantedBy=multi-user.target
