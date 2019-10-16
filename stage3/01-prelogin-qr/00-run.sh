@@ -2,7 +2,7 @@
 
 echo "  Deploy prelogin-qr service "
 install -m 644 files/prelogin-qr.service        "${ROOTFS_DIR}/etc/systemd/system/prelogin-qr.service"
-
+install -m 755 files/serial.sh                  "${ROOTFS_DIR}/usr/bin/serial.sh"
 on_chroot << EOF
 echo "  Enable prelogin-qr service "
 systemctl enable prelogin-qr
