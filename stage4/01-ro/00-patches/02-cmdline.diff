@@ -1,5 +1,5 @@
 --- a/rootfs/boot/cmdline.txt
 +++ b/rootfs/boot/cmdline.txt
 @@ -1 +1 @@
--console=tty1 root=ROOTDEV rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait modules-load=dwc2,g_ether quiet
-+console=tty1 root=ROOTDEV rootfstype=ext4 elevator=deadline fsck.mode=skip rootwait fastboot noswap ro modules-load=dwc2,g_ether quiet
+-console=tty1 root=ROOTDEV rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait modules-load=dwc2,g_ether quiet logo.nologo
++console=tty1 root=ROOTDEV rootfstype=ext4 elevator=deadline fsck.mode=skip rootwait fastboot noswap ro modules-load=dwc2,g_ether quiet logo.nologo
