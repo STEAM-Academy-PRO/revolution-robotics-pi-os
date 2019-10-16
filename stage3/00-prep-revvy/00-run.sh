@@ -59,6 +59,7 @@ chmod 755 -R /home/pi/RevvyFramework/
 
 mkdir /home/pi/RevvyFramework/default_packages
 mkdir -p /home/pi/RevvyFramework/user/ble
+mkdir -p /home/pi/RevvyFramework/user/data
 EOF
 
 cp install/framework.data "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.data"
