@@ -32,9 +32,6 @@ sudo systemctl disable keyboard-setup.service
 sudo systemctl disable graphical.target
 EOF
 
-echo "  Install production support script"
-install -m 755 files/serial.sh            "${ROOTFS_DIR}/home/pi/"
-
 echo "  Deploy python service "
 install -m 644 files/revvy.service        "${ROOTFS_DIR}/etc/systemd/system/revvy.service"
 
