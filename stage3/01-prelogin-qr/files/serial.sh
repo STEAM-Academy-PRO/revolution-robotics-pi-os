@@ -13,7 +13,7 @@ fi
 if [ "${SERIAL}" != "${STORED}" ]; then
     echo "Updating serial number in /boot/serial_number"
     mount -o remount,rw /boot
-    echo "${SERIAL}" | tee /boot/serial_number
+    echo "Revvy_${SERIAL}" | tee /boot/serial_number
     sync /boot/serial_number
     mount -o remount,ro /boot
 fi
