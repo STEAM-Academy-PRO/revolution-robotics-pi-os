@@ -46,7 +46,7 @@ git clone https://github.com/RevolutionRobotics/RevvyFramework.git
 cd RevvyFramework
 
 echo " Creating install package "
-python3 -m tools.create_package
+python3 -m dev_tools.create_package
 echo "  Copying install files to ${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/"
 
 on_chroot << EOF
