@@ -30,6 +30,8 @@ sudo systemctl disable systemd-timesyncd.service
 sudo systemctl disable wpa_supplicant.conf
 sudo systemctl disable keyboard-setup.service
 sudo systemctl disable graphical.target
+
+sudo -H pip3 install --upgrade pip==20.0.2
 EOF
 
 echo "  Deploy python service "
