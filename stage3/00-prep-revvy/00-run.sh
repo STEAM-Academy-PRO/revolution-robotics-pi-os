@@ -89,9 +89,11 @@ fi
 #/home/pi/WiringPi/build
 #EOF
 
-sudo setcap cap_net_raw,cap_net_admin+ep /usr/bin/python3.7
+
 
 on_chroot << EOF
+sudo setcap cap_net_raw,cap_net_admin+ep /usr/bin/python3.7
+
 echo "  Install the included package to the read-only part"
 python3 /home/pi/RevvyFramework/launch_revvy.py --install-only --install-default
 
