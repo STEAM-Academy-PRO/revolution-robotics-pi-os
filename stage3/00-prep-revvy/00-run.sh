@@ -11,10 +11,10 @@ echo "  Enable i2c module "
 echo "i2c-dev" >> /etc/modules
 
 # disable swapping
-sudo dphys-swapfile swapoff
-sudo dphys-swapfile uninstall
-sudo update-rc.d dphys-swapfile remove
-sudo apt purge -y dphys-swapfile
+#sudo dphys-swapfile swapoff
+#sudo dphys-swapfile uninstall
+#sudo update-rc.d dphys-swapfile remove
+#sudo apt purge -y dphys-swapfile
 
 # disable services that are not needed
 sudo systemctl disable systemd-update-utmp.service
