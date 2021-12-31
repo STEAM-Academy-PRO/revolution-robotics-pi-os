@@ -82,9 +82,8 @@ if [ -d "$DIR" ]; then
 else
     echo " Downloading latest WiringPi source "
     git clone https://github.com/WiringPi/WiringPi
+    cp WiringPi "${ROOTFS_DIR}/home/pi/WiringPi"
 fi
-
-cp WiringPi "${ROOTFS_DIR}/home/pi/WiringPi"
 
 on_chroot << EOF
 /home/pi/WiringPi/build
