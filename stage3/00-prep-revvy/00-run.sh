@@ -4,7 +4,8 @@ echo " Start installing things that are unique to revvy "
 
 on_chroot << EOF
 echo "  Enable raw sockets for python for BT "
-setcap 'cap_net_raw,cap_net_admin+eip' \$(readlink -f \$(which python3))
+#setcap 'cap_net_raw,cap_net_admin+eip' \$(readlink -f \$(which python3))
+setcap cap_net_raw,cap_net_admin+ep /usr/bin/python3.7
 
 echo "  Enable i2c module "
 echo "i2c-dev" >> /etc/modules
@@ -66,6 +67,11 @@ cd ..
 
 echo "  Deleting framework sources "
 rm -rf RevvyFramework
+
+git clone https://github.com/WiringPi/WiringPi
+cd WiringPi
+./build
+cd ..
 
 on_chroot << EOF
 echo "  Install the included package to the read-only part"
