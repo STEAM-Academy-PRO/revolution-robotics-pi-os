@@ -73,12 +73,15 @@ cp install/framework.meta "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.meta"
 cd ..
 
 echo "  Deleting framework sources "
-rm -rf RevvyFramework
+#rm -rf RevvyFramework
+
 
 git clone https://github.com/WiringPi/WiringPi
-cd WiringPi
-./build
-cd ..
+cp WiringPi "${ROOTFS_DIR}/home/pi/WiringPi"
+
+on_chroot << EOF
+/home/pi/WiringPi/build
+EOF
 
 sudo setcap cap_net_raw,cap_net_admin+ep /usr/bin/python3.7
 
