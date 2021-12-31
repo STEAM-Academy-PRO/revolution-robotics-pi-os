@@ -85,9 +85,9 @@ else
     cp -r WiringPi "${ROOTFS_DIR}/home/pi/WiringPi"
 fi
 
-on_chroot << EOF
-/home/pi/WiringPi/build
-EOF
+#on_chroot << EOF
+#/home/pi/WiringPi/build
+#EOF
 
 sudo setcap cap_net_raw,cap_net_admin+ep /usr/bin/python3.7
 
