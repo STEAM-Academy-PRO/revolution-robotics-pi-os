@@ -75,8 +75,15 @@ cd ..
 echo "  Deleting framework sources "
 #rm -rf RevvyFramework
 
+DIR="./WiringPi"
+if [ -d "$DIR" ]; then
+  # Take action if $DIR exists. #
+  echo "WiringPi already exists ${DIR}..."
+else
+    echo " Downloading latest WiringPi source "
+    git clone https://github.com/WiringPi/WiringPi
+fi
 
-git clone https://github.com/WiringPi/WiringPi
 cp WiringPi "${ROOTFS_DIR}/home/pi/WiringPi"
 
 on_chroot << EOF
