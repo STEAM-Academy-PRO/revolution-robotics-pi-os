@@ -38,9 +38,17 @@ EOF
 echo "  Deploy python service "
 install -m 644 files/revvy.service        "${ROOTFS_DIR}/etc/systemd/system/revvy.service"
 
-echo " Downloading latest framework source "
-git clone https://github.com/RevolutionRobotics/RevvyFramework.git
-cd RevvyFramework
+DIR="./RevvyFramework"
+if [ -d "$DIR" ]; then
+  # Take action if $DIR exists. #
+  echo "Framework already exists ${DIR}..."
+else
+    echo " Downloading latest framework source "
+    git clone https://github.com/RevolutionRobotics/RevvyFramework.git
+    cd RevvyFramework
+fi
+
+
 
 git clone https://github.com/RevolutionRobotics/RevvyLauncher.git
 echo "  Copying launcher to ${ROOTFS_DIR}/home/pi/RevvyFramework"
