@@ -38,15 +38,17 @@ EOF
 echo "  Deploy python service "
 install -m 644 files/revvy.service        "${ROOTFS_DIR}/etc/systemd/system/revvy.service"
 
+echo " Downloading latest framework source "
+git clone https://github.com/RevolutionRobotics/RevvyFramework.git
+cd RevvyFramework
+
 git clone https://github.com/RevolutionRobotics/RevvyLauncher.git
 echo "  Copying launcher to ${ROOTFS_DIR}/home/pi/RevvyFramework"
 cp -r RevvyLauncher/src "${ROOTFS_DIR}/home/pi/RevvyFramework"
 echo "  Deleting launcher sources "
 rm -rf RevvyLauncher
 
-echo " Downloading latest framework source "
-git clone https://github.com/RevolutionRobotics/RevvyFramework.git
-cd RevvyFramework
+
 
 echo " Creating install package "
 python3 -m dev_tools.create_package
