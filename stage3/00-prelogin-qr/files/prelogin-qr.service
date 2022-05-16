@@ -1,0 +1,11 @@
+[Unit]
+Description=Generate serial number based qr code for prelogin display
+Before=getty@.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/env /usr/bin/serial.sh
+
+[Install]
+WantedBy=multi-user.target
