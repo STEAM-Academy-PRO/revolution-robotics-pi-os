@@ -6,3 +6,4 @@ i2c-tools
 git
 pulseaudio
 mpg123
+python3-pyaudio
