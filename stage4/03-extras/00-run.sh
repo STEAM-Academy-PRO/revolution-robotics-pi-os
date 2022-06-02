@@ -13,4 +13,4 @@ echo $FIRST_USER_NAME
 
 # setcap 'cap_net_raw+eip' /usr/bin/python3.9
 setcap 'cap_net_raw+eip' "${ROOTFS_DIR}/usr/bin/python3.9"
-echo 'sudo systemctl restart revvy.service' >> "${ROOTFS_DIR}/home/pi/.bashrc"
+#echo 'sudo systemctl restart revvy.service' >> "${ROOTFS_DIR}/home/pi/.bashrc"
