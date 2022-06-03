@@ -27,12 +27,10 @@ sudo systemctl disable apt-daily-upgrade.timer
 sudo systemctl disable man-db.service
 sudo systemctl disable man-db.timer
 sudo systemctl disable systemd-timesyncd.service
-sudo systemctl disable wpa_supplicant.conf
+sudo systemctl disable wpa_supplicant.service
 sudo systemctl disable keyboard-setup.service
 sudo systemctl disable graphical.target
 
-sudo -H pip3 install --upgrade pip
-sudo -H apt-get install python3
 EOF
 
 echo "  Deploy python service "
@@ -60,10 +58,12 @@ chmod 755 -R /home/pi/RevvyFramework/
 
 mkdir -p /home/pi/RevvyFramework/user/ble
 mkdir -p /home/pi/RevvyFramework/user/data
+mkdir -p /home/pi/RevvyFramework/user/packages
 EOF
 
 cp install/framework.data "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.data"
 cp install/framework.meta "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.meta"
+cp install/*.gz "${ROOTFS_DIR}/home/pi/RevvyFramework/user/packages/"
 
 cd ..
 
