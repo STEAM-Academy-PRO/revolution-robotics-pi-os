@@ -1,4 +1,5 @@
 #!/bin/bash -eu
+
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 BUILD_OPTS="$*"
@@ -31,7 +32,9 @@ do
 done
 
 # Ensure that the configuration file is an absolute path
-CONFIG_FILE=$(realpath -s "$CONFIG_FILE")
+if test -x /usr/bin/realpath; then
+	CONFIG_FILE=$(realpath -s "$CONFIG_FILE" || realpath "$CONFIG_FILE")
+fi
 
 # Ensure that the confguration file is present
 if test -z "${CONFIG_FILE}"; then
@@ -39,13 +42,13 @@ if test -z "${CONFIG_FILE}"; then
 	exit 1
 else
 	# shellcheck disable=SC1090
-	source "${CONFIG_FILE}"
+	source ${CONFIG_FILE}
 fi
 
 CONTAINER_NAME=${CONTAINER_NAME:-pigen_work}
-CONTINUEDEBUG=${CONTINUEDEBUG:-0}
-CONTINUE=${CONTINUE:-$CONTINUEDEBUG}
+CONTINUE=${CONTINUE:-0}
 PRESERVE_CONTAINER=${PRESERVE_CONTAINER:-0}
+PIGEN_DOCKER_OPTS=${PIGEN_DOCKER_OPTS:-""}
 
 if [ -z "${IMG_NAME}" ]; then
 	echo "IMG_NAME not set in 'config'" 1>&2
@@ -63,7 +66,7 @@ if [ "${CONTAINER_RUNNING}" != "" ]; then
 	exit 1
 fi
 if [ "${CONTAINER_EXISTS}" != "" ] && [ "${CONTINUE}" != "1" ]; then
-	echo "Container ${CONTAINER_NAME} already exists and you did not specify CONTINUE=1 or CONTINUEDEBUG=1. Aborting."
+	echo "Container ${CONTAINER_NAME} already exists and you did not specify CONTINUE=1. Aborting."
 	echo "You can delete the existing container like this:"
 	echo "  ${DOCKER} rm -v ${CONTAINER_NAME}"
 	exit 1
@@ -72,40 +75,52 @@ fi
 # Modify original build-options to allow config file to be mounted in the docker container
 BUILD_OPTS="$(echo "${BUILD_OPTS:-}" | sed -E 's@\-c\s?([^ ]+)@-c /config@')"
 
-${DOCKER} build -t pi-gen "${DIR}"
-if [ "${CONTAINER_EXISTS}" != "" ] && [ "${CONTINUEDEBUG}" == "1" ]; then
-        echo "Starting up container for debug session. You can connect with:"
-        echo "  ${DOCKER} exec -it ${CONTAINER_NAME}_cont bash"
-        trap 'echo "got CTRL+C... please wait 5s" && ${DOCKER} stop -t 5 ${CONTAINER_NAME}_cont' SIGINT SIGTERM
-        time ${DOCKER} run --rm --privileged \
-                --volume "${CONFIG_FILE}":/config:ro \
-                -e "GIT_HASH=${GIT_HASH}" \
-                --volumes-from="${CONTAINER_NAME}" --name "${CONTAINER_NAME}_cont" \
-                pi-gen \
-                tail -f /dev/null &
-        wait "$!"
-elif [ "${CONTAINER_EXISTS}" != "" ]; then
+# Check the arch of the machine we're running on. If it's 64-bit, use a 32-bit base image instead
+case "$(uname -m)" in
+  x86_64|aarch64)
+    BASE_IMAGE=i386/debian:bullseye
+    ;;
+  *)
+    BASE_IMAGE=debian:bullseye
+    ;;
+esac
+${DOCKER} build --build-arg BASE_IMAGE=${BASE_IMAGE} -t pi-gen "${DIR}"
+
+if [ "${CONTAINER_EXISTS}" != "" ]; then
 	trap 'echo "got CTRL+C... please wait 5s" && ${DOCKER} stop -t 5 ${CONTAINER_NAME}_cont' SIGINT SIGTERM
 	time ${DOCKER} run --rm --privileged \
+		--cap-add=ALL \
+		-v /dev:/dev \
+		-v /lib/modules:/lib/modules \
+		${PIGEN_DOCKER_OPTS} \
 		--volume "${CONFIG_FILE}":/config:ro \
 		-e "GIT_HASH=${GIT_HASH}" \
 		--volumes-from="${CONTAINER_NAME}" --name "${CONTAINER_NAME}_cont" \
 		pi-gen \
 		bash -e -o pipefail -c "dpkg-reconfigure qemu-user-static &&
+	# binfmt_misc is sometimes not mounted with debian bullseye image
+	(mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc || true) &&
 	cd /pi-gen; ./build.sh ${BUILD_OPTS} &&
 	rsync -av work/*/build.log deploy/" &
 	wait "$!"
 else
 	trap 'echo "got CTRL+C... please wait 5s" && ${DOCKER} stop -t 5 ${CONTAINER_NAME}' SIGINT SIGTERM
 	time ${DOCKER} run --name "${CONTAINER_NAME}" --privileged \
+		--cap-add=ALL \
+		-v /dev:/dev \
+		-v /lib/modules:/lib/modules \
+		${PIGEN_DOCKER_OPTS} \
 		--volume "${CONFIG_FILE}":/config:ro \
 		-e "GIT_HASH=${GIT_HASH}" \
 		pi-gen \
 		bash -e -o pipefail -c "dpkg-reconfigure qemu-user-static &&
+	# binfmt_misc is sometimes not mounted with debian bullseye image
+	(mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc || true) &&
 	cd /pi-gen; ./build.sh ${BUILD_OPTS} &&
 	rsync -av work/*/build.log deploy/" &
 	wait "$!"
 fi
+
 echo "copying results from deploy/"
 ${DOCKER} cp "${CONTAINER_NAME}":/pi-gen/deploy .
 ls -lah deploy

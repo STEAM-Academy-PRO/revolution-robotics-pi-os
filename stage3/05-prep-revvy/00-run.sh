@@ -4,16 +4,16 @@ echo " Start installing things that are unique to revvy "
 
 on_chroot << EOF
 echo "  Enable raw sockets for python for BT "
-setcap 'cap_net_raw,cap_net_admin+eip' \$(readlink -f \$(which python3))
+#setcap 'cap_net_raw,cap_net_admin+eip' /usr/bin/python3.9
 
 echo "  Enable i2c module "
 echo "i2c-dev" >> /etc/modules
 
 # disable swapping
-sudo dphys-swapfile swapoff
-sudo dphys-swapfile uninstall
-sudo update-rc.d dphys-swapfile remove
-sudo apt purge -y dphys-swapfile
+#sudo dphys-swapfile swapoff
+#sudo dphys-swapfile uninstall
+#sudo update-rc.d dphys-swapfile remove
+#sudo apt purge -y dphys-swapfile
 
 # disable services that are not needed
 sudo systemctl disable systemd-update-utmp.service
@@ -27,11 +27,10 @@ sudo systemctl disable apt-daily-upgrade.timer
 sudo systemctl disable man-db.service
 sudo systemctl disable man-db.timer
 sudo systemctl disable systemd-timesyncd.service
-sudo systemctl disable wpa_supplicant.conf
+sudo systemctl disable wpa_supplicant.service
 sudo systemctl disable keyboard-setup.service
 sudo systemctl disable graphical.target
 
-sudo -H pip3 install --upgrade pip==20.0.2
 EOF
 
 echo "  Deploy python service "
@@ -44,6 +43,8 @@ echo "  Deleting launcher sources "
 rm -rf RevvyLauncher
 
 echo " Downloading latest framework source "
+mkdir tempRF
+cd tempRF
 git clone https://github.com/RevolutionRobotics/RevvyFramework.git
 cd RevvyFramework
 
@@ -57,15 +58,21 @@ chmod 755 -R /home/pi/RevvyFramework/
 
 mkdir -p /home/pi/RevvyFramework/user/ble
 mkdir -p /home/pi/RevvyFramework/user/data
+mkdir -p /home/pi/RevvyFramework/user/packages
 EOF
 
 cp install/framework.data "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.data"
 cp install/framework.meta "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.meta"
+cp install/*.gz "${ROOTFS_DIR}/home/pi/RevvyFramework/user/packages/"
 
 cd ..
 
 echo "  Deleting framework sources "
 rm -rf RevvyFramework
+
+echo " Deleting tempRF directory"
+cd ..
+rm -rf tempRF
 
 on_chroot << EOF
 echo "  Install the included package to the read-only part"
