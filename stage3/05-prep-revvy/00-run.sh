@@ -38,12 +38,11 @@ install -m 644 files/revvy.service        "${ROOTFS_DIR}/etc/systemd/system/revv
 
 echo "  Copying launcher to ${ROOTFS_DIR}/home/pi/RevvyFramework"
 cp -r files/RevvyLauncher/src "${ROOTFS_DIR}/home/pi/RevvyFramework"
-echo "  Deleting launcher sources "
 
 echo " Downloading latest firmware source "
 mkdir tempRF
 cd tempRF
-git clone https://github.com/STEAM-Academy-PRO/revolution-robotics-robot-mind.git
+git clone git@github.com:STEAM-Academy-PRO/revolution-robotics-robot-mind.git
 cd revolution-robotics-robot-mind/pi-firmware
 
 echo " Creating install package "
