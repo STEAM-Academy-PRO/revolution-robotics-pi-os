@@ -2,7 +2,8 @@ name: Build OS image
 
 on:
   push:
-    branches: [ master ]
+    tags:
+      - '*'
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -14,6 +15,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v3
@@ -27,9 +30,13 @@ jobs:
             sudo apt-get update
             sudo apt-get install quilt qemu-user-static debootstrap libarchive-tools qemu-utils
             sudo --preserve-env=SSH_AUTH_SOCK ./build.sh
-
-      - name: archive
-        uses: actions/upload-artifact@v3
+      
+      - name: Upload image to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          name: OS image
-          path: deploy/*.zip
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: deploy/*.zip
+          file_glob: true
+          asset_name: Pi-OS image
+          tag: ${{ github.ref }}
+          promote: true # create a pre-release to trigger workflow, then promote to release when done
