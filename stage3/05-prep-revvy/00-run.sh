@@ -42,7 +42,7 @@ cp -r files/RevvyLauncher/src "${ROOTFS_DIR}/home/pi/RevvyFramework"
 echo " Downloading latest firmware source "
 mkdir tempRF
 cd tempRF
-git clone git@github.com:STEAM-Academy-PRO/revolution-robotics-robot-mind.git
+git clone git@github.com:STEAM-Academy-PRO/revolution-robotics-robot-mind.git --depth 1
 cd revolution-robotics-robot-mind/pi-firmware
 
 echo " Creating install package "
