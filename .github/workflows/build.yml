@@ -30,7 +30,7 @@ jobs:
             sudo apt-get update
             sudo apt-get install quilt qemu-user-static debootstrap libarchive-tools qemu-utils
             sudo --preserve-env=SSH_AUTH_SOCK ./build.sh
-      
+
       - name: Upload image to release
         uses: svenstaro/upload-release-action@v2
         with:
