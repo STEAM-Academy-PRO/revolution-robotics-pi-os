@@ -24,7 +24,7 @@ s/^#?[[:blank:]]*PasswordAuthentication[[:blank:]]*yes[[:blank:]]*$/PasswordAuth
 fi
 
 on_chroot << EOF
-# systemctl disable hwclock.sh
+systemctl disable hwclock.sh
 systemctl disable nfs-common
 systemctl disable rpcbind
 if [ "${ENABLE_SSH}" == "1" ]; then
@@ -56,6 +56,10 @@ for GRP in adm dialout cdrom audio users sudo video games plugdev input gpio spi
   adduser $FIRST_USER_NAME \$GRP
 done
 EOF
+
+if [ -f "${ROOTFS_DIR}/etc/sudoers.d/010_pi-nopasswd" ]; then
+  sed -i "s/^pi /$FIRST_USER_NAME /" "${ROOTFS_DIR}/etc/sudoers.d/010_pi-nopasswd"
+fi
 
 on_chroot << EOF
 setupcon --force --save-only -v
