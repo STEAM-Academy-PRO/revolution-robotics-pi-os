@@ -59,8 +59,8 @@ mkdir -p /home/pi/RevvyFramework/user/data
 mkdir -p /home/pi/RevvyFramework/user/packages
 EOF
 
-cp install/framework.data "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.data"
-cp install/framework.meta "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.meta"
+cp install/pi-firmware.data "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.data"
+cp install/pi-firmware.meta "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.meta"
 cp install/*.gz "${ROOTFS_DIR}/home/pi/RevvyFramework/user/packages/"
 
 cd ../..
