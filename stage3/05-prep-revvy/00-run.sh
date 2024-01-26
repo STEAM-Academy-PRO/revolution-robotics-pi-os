@@ -53,18 +53,12 @@ cd tempRF
 
 if [ -z ${FIRMWARE_RELEASE} ]; then
     echo " Downloading latest release "
-    gh release download ${FIRMWARE_RELEASE} -R STEAM-Academy-PRO/revolution-robotics-robot-mind -p pi-firmware.data
+    gh release download ${FIRMWARE_RELEASE} -R STEAM-Academy-PRO/revolution-robotics-robot-mind -p "pi-firmware.*"
 
-    mkdir revvy-factory
-    cd revvy-factory
-    tar -xvf ../pi-firmware.data
-    touch installed
-    cd ..
+    echo "  Copying install files to ${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/"
 
-    echo "  Copying package folder to ${ROOTFS_DIR}/home/pi/RevvyFramework/default/packages/"
-    cp -r revvy-factory/* "${ROOTFS_DIR}/home/pi/RevvyFramework/default/packages/"
-
-    rm -rf revvy-factory
+    cp pi-firmware.data "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.data"
+    cp pi-firmware.meta "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.meta"
 elif [ -z ${FIRMWARE_REV} ]; then
     echo " Downloading latest firmware source "
     echo " WARNING: currently this package will not include the mcu-firmware!! "
@@ -79,16 +73,10 @@ elif [ -z ${FIRMWARE_REV} ]; then
 
     cp install/pi-firmware.data "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.data"
     cp install/pi-firmware.meta "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.meta"
-    cp install/*.gz "${ROOTFS_DIR}/home/pi/RevvyFramework/user/packages/"
-
-    on_chroot << EOF
-    echo "  Install the included package to the read-only part"
-    python3 /home/pi/RevvyFramework/launch_revvy.py --install-only --install-default
-EOF
-    cd ../..
 
     echo "  Deleting pi-firmware sources "
     rm -rf revolution-robotics-robot-mind
+    cd ../..
 else
     echo " No firmware release or revision specified "
     exit 1
@@ -98,7 +86,11 @@ echo " Deleting tempRF directory"
 cd ..
 rm -rf tempRF
 
+
 on_chroot << EOF
+echo "  Install the included package to the read-only part"
+python3 /home/pi/RevvyFramework/launch_revvy.py --install-only --install-default
+
 echo "  Set the data directory to be writeable by the framework"
 chown pi:pi -R "/home/pi/RevvyFramework/user"
 chmod 775 -R "/home/pi/RevvyFramework/user"
