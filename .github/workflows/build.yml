@@ -7,6 +7,7 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GH_TOKEN: ${{ secrets.GH_TOKEN_MIND }}
 
 concurrency:
   cancel-in-progress: true
@@ -29,7 +30,7 @@ jobs:
         run: |
             sudo apt-get update
             sudo apt-get install quilt qemu-user-static debootstrap libarchive-tools qemu-utils
-            sudo --preserve-env=SSH_AUTH_SOCK ./build.sh
+            sudo --preserve-env=SSH_AUTH_SOCK,GH_TOKEN ./build.sh
 
       - name: Upload image to release
         uses: svenstaro/upload-release-action@v2
