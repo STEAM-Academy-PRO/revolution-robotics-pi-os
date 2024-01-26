@@ -39,17 +39,6 @@ install -m 644 files/revvy.service        "${ROOTFS_DIR}/etc/systemd/system/revv
 echo "  Copying launcher to ${ROOTFS_DIR}/home/pi/RevvyFramework"
 cp -r files/RevvyLauncher/src "${ROOTFS_DIR}/home/pi/RevvyFramework"
 
-echo " Downloading latest firmware source "
-mkdir tempRF
-cd tempRF
-git clone git@github.com:STEAM-Academy-PRO/revolution-robotics-robot-mind.git
-cd revolution-robotics-robot-mind/pi-firmware
-git checkout ${FIRMWARE_REV}
-
-echo " Creating install package "
-python3 -m dev_tools.create_package
-echo "  Copying install files to ${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/"
-
 on_chroot << EOF
 echo "  Setting permissions on data directory "
 chmod 755 -R /home/pi/RevvyFramework/
@@ -59,23 +48,57 @@ mkdir -p /home/pi/RevvyFramework/user/data
 mkdir -p /home/pi/RevvyFramework/user/packages
 EOF
 
-cp install/pi-firmware.data "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.data"
-cp install/pi-firmware.meta "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.meta"
-cp install/*.gz "${ROOTFS_DIR}/home/pi/RevvyFramework/user/packages/"
+mkdir tempRF
+cd tempRF
 
-cd ../..
+if [ -z ${FIRMWARE_RELEASE} ]; then
+    echo " Downloading latest release "
+    gh release download ${FIRMWARE_RELEASE} -R STEAM-Academy-PRO/revolution-robotics-robot-mind -p pi-firmware.data
 
-echo "  Deleting framework sources "
-rm -rf revolution-robotics-robot-mind
+    mkdir revvy-factory
+    cd revvy-factory
+    tar -xvf ../pi-firmware.data
+    touch installed
+    cd ..
+
+    echo "  Copying package folder to ${ROOTFS_DIR}/home/pi/RevvyFramework/default/packages/"
+    cp -r revvy-factory/* "${ROOTFS_DIR}/home/pi/RevvyFramework/default/packages/"
+
+    rm -rf revvy-factory
+elif [ -z ${FIRMWARE_REV} ]; then
+    echo " Downloading latest firmware source "
+    echo " WARNING: currently this package will not include the mcu-firmware!! "
+
+    git clone git@github.com:STEAM-Academy-PRO/revolution-robotics-robot-mind.git
+    cd revolution-robotics-robot-mind/pi-firmware
+    git checkout ${FIRMWARE_REV}
+
+    echo " Creating install package "
+    python3 -m dev_tools.create_package
+    echo "  Copying install files to ${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/"
+
+    cp install/pi-firmware.data "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.data"
+    cp install/pi-firmware.meta "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.meta"
+    cp install/*.gz "${ROOTFS_DIR}/home/pi/RevvyFramework/user/packages/"
+
+    on_chroot << EOF
+    echo "  Install the included package to the read-only part"
+    python3 /home/pi/RevvyFramework/launch_revvy.py --install-only --install-default
+EOF
+    cd ../..
+
+    echo "  Deleting pi-firmware sources "
+    rm -rf revolution-robotics-robot-mind
+else
+    echo " No firmware release or revision specified "
+    exit 1
+fi
 
 echo " Deleting tempRF directory"
 cd ..
 rm -rf tempRF
 
 on_chroot << EOF
-echo "  Install the included package to the read-only part"
-python3 /home/pi/RevvyFramework/launch_revvy.py --install-only --install-default
-
 echo "  Set the data directory to be writeable by the framework"
 chown pi:pi -R "/home/pi/RevvyFramework/user"
 chmod 775 -R "/home/pi/RevvyFramework/user"
