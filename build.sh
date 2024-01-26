@@ -284,6 +284,8 @@ export NO_PRERUN_QCOW2="${NO_PRERUN_QCOW2:-1}"
 
 dependencies_check "${BASE_DIR}/depends"
 
+gh auth status
+
 #check username is valid
 if [[ ! "$FIRST_USER_NAME" =~ ^[a-z][-a-z0-9_]*$ ]]; then
 	echo "Invalid FIRST_USER_NAME: $FIRST_USER_NAME"
