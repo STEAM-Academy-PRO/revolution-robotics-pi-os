@@ -110,7 +110,7 @@ def cleanup_invalid_installations(directory):
         print('No user packages exist')
 
 
-def has_update_package(directory):
+def has_update_package(directory, filename):
     """Checks if a valid fw update package is available.
 
     The '2.meta' json file contains length and md5 information about the update
@@ -123,8 +123,8 @@ def has_update_package(directory):
         True if update package is present and valid.
     """
     print("Looking for update files in {}".format(directory))
-    framework_update_file = os.path.join(directory, '2.data')
-    framework_update_meta_file = os.path.join(directory, '2.meta')
+    framework_update_file = os.path.join(directory, f'{filename}.data')
+    framework_update_meta_file = os.path.join(directory, f'{filename}.meta')
     update_file_valid = False
 
     if os.path.isfile(framework_update_file) and os.path.isfile(framework_update_meta_file):
@@ -163,7 +163,7 @@ def dir_for_version(version):
     return 'revvy-{}'.format(version)
 
 
-def install_update_package(data_directory, install_directory):
+def install_update_package(data_directory, install_directory, filename):
     """Install update package.
 
     Extracts, validates and installs the update package. If any step of this
@@ -177,8 +177,8 @@ def install_update_package(data_directory, install_directory):
         data_directory: Directory path containing the fw update.
         install_directory: Directory path with the fw installations.
     """
-    framework_update_file = os.path.join(data_directory, '2.data')
-    framework_update_meta_file = os.path.join(data_directory, '2.meta')
+    framework_update_file = os.path.join(data_directory, f'{filename}.data')
+    framework_update_meta_file = os.path.join(data_directory, f'{filename}.meta')
     tmp_dir = os.path.join(install_directory, 'tmp')
 
     if os.path.isdir(tmp_dir):
@@ -357,8 +357,10 @@ def startup(directory):
     stop = False
     while not stop:
         cleanup_invalid_installations(install_directory)
-        if has_update_package(data_directory):
-            install_update_package(data_directory, install_directory)
+        if has_update_package(data_directory, 'pi-firmware'):
+            install_update_package(data_directory, install_directory, 'pi-firmware')
+        elif has_update_package(data_directory, '2'):
+            install_update_package(data_directory, install_directory, '2')
 
         if args.install_only:
             print('--install-only flag is set, exiting')
