@@ -38,3 +38,4 @@ jobs:
         with:
           name: image
           path: deploy/*
+          retention-days: 1
