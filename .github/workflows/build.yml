@@ -40,4 +40,4 @@ jobs:
           file_glob: true
           asset_name: Pi-OS image
           tag: ${{ github.ref }}
-          promote: true # create a pre-release to trigger workflow, then promote to release when done
+          promote: false
