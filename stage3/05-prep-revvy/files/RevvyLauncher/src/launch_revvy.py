@@ -13,8 +13,8 @@ from json import JSONDecodeError
 from version import Version
 
 
-default_package_dir = 'default/packages'
-installed_packages_dir = 'user/packages'
+default_package_dir = "default/packages"
+installed_packages_dir = "user/packages"
 start_directories = [installed_packages_dir, default_package_dir]
 
 
@@ -29,15 +29,15 @@ def read_version(file):
         or None on error.
     """
     try:
-        with open(file, 'r') as mf:
+        with open(file, "r") as mf:
             manifest = json.load(mf)
-        return Version(manifest['version'])
+        return Version(manifest["version"])
     except FileNotFoundError:
-        print('File not found: {}'.format(file))
+        print("File not found: {}".format(file))
     except JSONDecodeError:
-        print('Invalid json file: {}'.format(file))
+        print("Invalid json file: {}".format(file))
     except KeyError:
-        print('Json file is valid but there is no version in it: {}'.format(file))
+        print("Json file is valid but there is no version in it: {}".format(file))
 
     return None
 
@@ -61,7 +61,7 @@ def file_hash(file):
             hash_fn.update(f.read())
         return hash_fn.hexdigest()
     except IOError:
-        print('Could not calculate hash for {}'.format(file))
+        print("Could not calculate hash for {}".format(file))
         print(traceback.format_exc())
         return None
 
@@ -76,8 +76,10 @@ def subprocess_cmd(command):
         Return code of execution
     """
     try:
-        process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True, universal_newlines=True)
-        for line in iter(process.stdout.readline, b''):
+        process = subprocess.Popen(
+            command, stdout=subprocess.PIPE, shell=True, universal_newlines=True
+        )
+        for line in iter(process.stdout.readline, b""):
             sys.stdout.write(line)
             if process.poll() is not None:
                 break
@@ -102,12 +104,12 @@ def cleanup_invalid_installations(directory):
             print("Checking {}".format(fw_dir))
             fw_dir = os.path.join(directory, fw_dir)
             if os.path.isdir(fw_dir):
-                manifest_file = os.path.join(fw_dir, 'installed')
+                manifest_file = os.path.join(fw_dir, "installed")
                 if not os.path.isfile(manifest_file):
-                    print('Removing {}'.format(fw_dir))
+                    print("Removing {}".format(fw_dir))
                     shutil.rmtree(fw_dir)
     except FileNotFoundError:
-        print('No user packages exist')
+        print("No user packages exist")
 
 
 def has_update_package(directory, filename):
@@ -123,22 +125,27 @@ def has_update_package(directory, filename):
         True if update package is present and valid.
     """
     print("Looking for update files in {}".format(directory))
-    framework_update_file = os.path.join(directory, f'{filename}.data')
-    framework_update_meta_file = os.path.join(directory, f'{filename}.meta')
+    framework_update_file = os.path.join(directory, f"{filename}.data")
+    framework_update_meta_file = os.path.join(directory, f"{filename}.meta")
     update_file_valid = False
 
-    if os.path.isfile(framework_update_file) and os.path.isfile(framework_update_meta_file):
+    if os.path.isfile(framework_update_file) and os.path.isfile(
+        framework_update_meta_file
+    ):
         print("Found update file, validating...")
         try:
-            with open(framework_update_meta_file, 'r') as fup_mf:
+            with open(framework_update_meta_file, "r") as fup_mf:
                 metadata = json.load(fup_mf)
-                if metadata['length'] == os.stat(framework_update_file).st_size:
-                    if metadata['md5'] is not None and file_hash(framework_update_file) == metadata['md5']:
+                if metadata["length"] == os.stat(framework_update_file).st_size:
+                    if (
+                        metadata["md5"] is not None
+                        and file_hash(framework_update_file) == metadata["md5"]
+                    ):
                         update_file_valid = True
                     else:
-                        print('Update file hash mismatch')
+                        print("Update file hash mismatch")
                 else:
-                    print('Update file length mismatch')
+                    print("Update file length mismatch")
         except IOError:
             print("Failed to read metadata")
         except (JSONDecodeError, KeyError):
@@ -160,7 +167,7 @@ def dir_for_version(version):
     Returns:
         Directory name as a string.
     """
-    return 'revvy-{}'.format(version)
+    return "revvy-{}".format(version)
 
 
 def install_update_package(data_directory, install_directory, filename):
@@ -177,32 +184,32 @@ def install_update_package(data_directory, install_directory, filename):
         data_directory: Directory path containing the fw update.
         install_directory: Directory path with the fw installations.
     """
-    framework_update_file = os.path.join(data_directory, f'{filename}.data')
-    framework_update_meta_file = os.path.join(data_directory, f'{filename}.meta')
-    tmp_dir = os.path.join(install_directory, 'tmp')
+    framework_update_file = os.path.join(data_directory, f"{filename}.data")
+    framework_update_meta_file = os.path.join(data_directory, f"{filename}.meta")
+    tmp_dir = os.path.join(install_directory, "tmp")
 
     if os.path.isdir(tmp_dir):
-        print('Removing stuck tmp dir: {}'.format(tmp_dir))
+        print("Removing stuck tmp dir: {}".format(tmp_dir))
         shutil.rmtree(tmp_dir)  # probably failed update?
 
     # try to extract package
     try:
-        print('Extracting update package to: {}'.format(tmp_dir))
+        print("Extracting update package to: {}".format(tmp_dir))
         with tarfile.open(framework_update_file, "r:gz") as tar:
             tar.extractall(path=tmp_dir)
     except (ValueError, tarfile.TarError):
-        print('Failed to extract package')
+        print("Failed to extract package")
         os.unlink(framework_update_file)
         os.unlink(framework_update_meta_file)
         return
 
     # try to read package version
     # integrity check done by installed package, now only get the version
-    version_to_install = read_version(os.path.join(tmp_dir, 'manifest.json'))
+    version_to_install = read_version(os.path.join(tmp_dir, "manifest.json"))
 
-    print('Reading package version')
+    print("Reading package version")
     if version_to_install is None:
-        print('Failed to read package version')
+        print("Failed to read package version")
         shutil.rmtree(tmp_dir)
         os.unlink(framework_update_file)
         os.unlink(framework_update_meta_file)
@@ -210,35 +217,36 @@ def install_update_package(data_directory, install_directory, filename):
 
     target_dir = os.path.join(install_directory, dir_for_version(version_to_install))
     if os.path.isdir(target_dir):
-        print('Update seems to already been installed, skipping')
+        print("Update seems to already been installed, skipping")
         # we don't want to install this package, remove sources
         shutil.rmtree(tmp_dir)
         os.unlink(framework_update_file)
         os.unlink(framework_update_meta_file)
         return
 
-    print('Installing version: {}'.format(version_to_install))
-    print('Renaming {} to {}'.format(tmp_dir, target_dir))
+    print("Installing version: {}".format(version_to_install))
+    print("Renaming {} to {}".format(tmp_dir, target_dir))
     shutil.move(tmp_dir, target_dir)
 
-    print('Running setup')
+    print("Running setup")
     lines = [
         # setup virtual env
         'echo "Setting up venv"',
-        'python3 -m venv {}/install/venv'.format(target_dir),
+        "python3 -m venv {}/install/venv".format(target_dir),
         # activate venv
         'echo "Activating venv"',
-        'sh {}/install/venv/bin/activate'.format(target_dir),
+        "sh {}/install/venv/bin/activate".format(target_dir),
         # install pip dependencies
         'echo "Installing dependencies"',
-        'python3 -m pip install --no-cache-dir -r {0}/requirements.txt --no-index --find-links file:///{0}/packages'
-        .format(os.path.join(target_dir, 'install')),
+        "python3 -m pip install --no-cache-dir -r {0}/requirements.txt --no-index --find-links file:///{0}/packages".format(
+            os.path.join(target_dir, "install")
+        ),
         # create file that signals finished installation
-        'touch {}/installed'.format(target_dir)
+        "touch {}/installed".format(target_dir),
     ]
     subprocess_cmd("\n".join(lines))
 
-    print('Removing update package')
+    print("Removing update package")
     os.unlink(framework_update_file)
     os.unlink(framework_update_meta_file)
 
@@ -265,15 +273,15 @@ def select_newest_package(directory, skipped_versions):
         for fw_dir in os.listdir(directory):
             fw_dir = os.path.join(directory, fw_dir)
             if fw_dir not in skipped_versions:
-                manifest_file = os.path.join(fw_dir, 'manifest.json')
+                manifest_file = os.path.join(fw_dir, "manifest.json")
                 if os.path.isfile(manifest_file):
                     version = read_version(manifest_file)
                     if version is not None and (newest is None or newest < version):
                         newest = version
-                        print('Found version {}'.format(version))
+                        print("Found version {}".format(version))
                         newest_path = os.path.join(directory, dir_for_version(version))
     except FileNotFoundError:
-        print('Failed to select newest package')
+        print("Failed to select newest package")
         print(traceback.format_exc())
 
     return newest_path
@@ -294,19 +302,19 @@ def start_framework(path):
     script_lives = True
     return_value = 0
     while script_lives:
-        print('Starting {}'.format(path))
+        print("Starting {}".format(path))
         lines = [
             # activate venv
-            'sh {}/install/venv/bin/activate'.format(path),
+            "sh {}/install/venv/bin/activate".format(path),
             # start script
-            'python3 -u {}/revvy.py'.format(path)
+            "python3 -u {}/revvy.py".format(path),
         ]
         try:
             return_value = subprocess_cmd("\n".join(lines))
         except KeyboardInterrupt:
             return_value = 0
 
-        print('Script exited with {}'.format(return_value))
+        print("Script exited with {}".format(return_value))
         if return_value == 1:
             # if script dies with error, restart [maybe measure runtime and if shorter than X and disable]
             pass
@@ -336,9 +344,17 @@ def startup(directory):
             framework.
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('--install-only', help='Install updates but do not start framework', action='store_true')
-    parser.add_argument('--install-default', help='Install the default package. Requires --install-only'
-                                                  ' and the filesystem must be writeable.', action='store_true')
+    parser.add_argument(
+        "--install-only",
+        help="Install updates but do not start framework",
+        action="store_true",
+    )
+    parser.add_argument(
+        "--install-default",
+        help="Install the default package. Requires --install-only"
+        " and the filesystem must be writeable.",
+        action="store_true",
+    )
 
     args = parser.parse_args()
 
@@ -349,21 +365,21 @@ def startup(directory):
     else:
         install_directory = os.path.join(directory, installed_packages_dir)
 
-    data_directory = os.path.join(directory, 'user', 'ble')
+    data_directory = os.path.join(directory, "user", "ble")
 
-    print('Install directory: {}'.format(install_directory))
-    print('Data directory: {}'.format(data_directory))
+    print("Install directory: {}".format(install_directory))
+    print("Data directory: {}".format(data_directory))
 
     stop = False
     while not stop:
         cleanup_invalid_installations(install_directory)
-        if has_update_package(data_directory, 'pi-firmware'):
-            install_update_package(data_directory, install_directory, 'pi-firmware')
-        elif has_update_package(data_directory, '2'):
-            install_update_package(data_directory, install_directory, '2')
+        if has_update_package(data_directory, "pi-firmware"):
+            install_update_package(data_directory, install_directory, "pi-firmware")
+        elif has_update_package(data_directory, "2"):
+            install_update_package(data_directory, install_directory, "2")
 
         if args.install_only:
-            print('--install-only flag is set, exiting')
+            print("--install-only flag is set, exiting")
             stop = True
         else:
             # configure AMP_EN to input
@@ -371,7 +387,7 @@ def startup(directory):
 
             # read AMP_EN to detect if Revvy is ON
             amp_en = subprocess.check_output(["gpio", "read", "3"])
-            while amp_en != b'1\n':
+            while amp_en != b"1\n":
                 print("Device is off... waiting")
                 time.sleep(1)
                 amp_en = subprocess.check_output(["gpio", "read", "3"])
@@ -388,15 +404,15 @@ def startup(directory):
             if path:
                 return_value = start_framework(path)
                 if return_value == 0:
-                    print('Manual exit')
+                    print("Manual exit")
                     stop = True
                 elif return_value == 2:
                     # if script dies with integrity error, restart process and skip framework
-                    print('Integrity error - add {} to skipped list'.format(path))
+                    print("Integrity error - add {} to skipped list".format(path))
                     skipped_versions.append(path)
             else:
                 # if, for some reason there is no built-in package, stop
-                print('There are no more packages to try - exit')
+                print("There are no more packages to try - exit")
                 stop = True
 
 
