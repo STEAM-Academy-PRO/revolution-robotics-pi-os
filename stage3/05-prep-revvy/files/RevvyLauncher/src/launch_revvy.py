@@ -190,7 +190,7 @@ def yellow(s):
     return ansi_colored(s, "93")
 
 
-def install_update_package(install_directory, filename):
+def install_update_package(install_directory, filename, is_dev_package: bool):
     """Install update package.
 
     Extracts, validates and installs the update package. If any step of this
@@ -229,7 +229,6 @@ def install_update_package(install_directory, filename):
     # integrity check done by installed package, now only get the version
     version_to_install = read_version(os.path.join(tmp_dir, "manifest.json"))
 
-    print("Reading package version")
     if version_to_install is None:
         print("Failed to read package version")
         shutil.rmtree(tmp_dir)
@@ -239,12 +238,16 @@ def install_update_package(install_directory, filename):
 
     target_dir = os.path.join(install_directory, dir_for_version(version_to_install))
     if os.path.isdir(target_dir):
-        print("Update seems to already been installed, skipping")
-        # we don't want to install this package, remove sources
-        shutil.rmtree(tmp_dir)
-        os.unlink(framework_update_file)
-        os.unlink(framework_update_meta_file)
-        return
+        if is_dev_package:
+            print(yellow("Dev package, overwriting existing version"))
+            shutil.rmtree(target_dir)
+        else:
+            print(yellow("Trying to install an installed version, skipping"))
+            # we don't want to install this package, remove sources
+            shutil.rmtree(tmp_dir)
+            os.unlink(framework_update_file)
+            os.unlink(framework_update_meta_file)
+            return
 
     print(f"Installing version: {version_to_install}")
     print(f"Renaming {tmp_dir} to {target_dir}")
@@ -430,9 +433,9 @@ def start_newest_framework(skipped_versions: List[str]):
 
 def install_updates(install_directory):
     if has_update_package(data_directory, "pi-firmware"):
-        install_update_package(install_directory, "pi-firmware")
+        install_update_package(install_directory, "pi-firmware", True)
     elif has_update_package(data_directory, "2"):
-        install_update_package(install_directory, "2")
+        install_update_package(install_directory, "2", False)
 
 
 def main():
