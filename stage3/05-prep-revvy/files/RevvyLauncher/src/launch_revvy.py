@@ -33,11 +33,11 @@ def read_version(file):
             manifest = json.load(mf)
         return Version(manifest["version"])
     except FileNotFoundError:
-        print("File not found: {}".format(file))
+        print(f"File not found: {file}")
     except JSONDecodeError:
-        print("Invalid json file: {}".format(file))
+        print(f"Invalid json file: {file}")
     except KeyError:
-        print("Json file is valid but there is no version in it: {}".format(file))
+        print(f"Json file is valid but there is no version in it: {file}")
 
     return None
 
@@ -61,7 +61,7 @@ def file_hash(file):
             hash_fn.update(f.read())
         return hash_fn.hexdigest()
     except IOError:
-        print("Could not calculate hash for {}".format(file))
+        print(f"Could not calculate hash for {file}")
         print(traceback.format_exc())
         return None
 
@@ -101,12 +101,12 @@ def cleanup_invalid_installations(directory):
     print("Cleaning up invalid installations")
     try:
         for fw_dir in os.listdir(directory):
-            print("Checking {}".format(fw_dir))
+            print(f"Checking {fw_dir}")
             fw_dir = os.path.join(directory, fw_dir)
             if os.path.isdir(fw_dir):
                 manifest_file = os.path.join(fw_dir, "installed")
                 if not os.path.isfile(manifest_file):
-                    print("Removing {}".format(fw_dir))
+                    print(f"Removing {fw_dir}")
                     shutil.rmtree(fw_dir)
     except FileNotFoundError:
         print("No user packages exist")
@@ -124,7 +124,7 @@ def has_update_package(directory, filename):
     Returns:
         True if update package is present and valid.
     """
-    print("Looking for update files in {}".format(directory))
+    print(f"Looking for update files in {directory}")
     framework_update_file = os.path.join(directory, f"{filename}.data")
     framework_update_meta_file = os.path.join(directory, f"{filename}.meta")
     update_file_valid = False
@@ -167,7 +167,7 @@ def dir_for_version(version):
     Returns:
         Directory name as a string.
     """
-    return "revvy-{}".format(version)
+    return f"revvy-{version}"
 
 
 def install_update_package(data_directory, install_directory, filename):
@@ -189,12 +189,12 @@ def install_update_package(data_directory, install_directory, filename):
     tmp_dir = os.path.join(install_directory, "tmp")
 
     if os.path.isdir(tmp_dir):
-        print("Removing stuck tmp dir: {}".format(tmp_dir))
+        print(f"Removing stuck tmp dir: {tmp_dir}")
         shutil.rmtree(tmp_dir)  # probably failed update?
 
     # try to extract package
     try:
-        print("Extracting update package to: {}".format(tmp_dir))
+        print(f"Extracting update package to: {tmp_dir}")
         with tarfile.open(framework_update_file, "r:gz") as tar:
             tar.extractall(path=tmp_dir)
     except (ValueError, tarfile.TarError):
@@ -224,25 +224,24 @@ def install_update_package(data_directory, install_directory, filename):
         os.unlink(framework_update_meta_file)
         return
 
-    print("Installing version: {}".format(version_to_install))
-    print("Renaming {} to {}".format(tmp_dir, target_dir))
+    print(f"Installing version: {version_to_install}")
+    print(f"Renaming {tmp_dir} to {target_dir}")
     shutil.move(tmp_dir, target_dir)
 
     print("Running setup")
+    install_folder = os.path.join(target_dir, "install")
     lines = [
         # setup virtual env
         'echo "Setting up venv"',
-        "python3 -m venv {}/install/venv".format(target_dir),
+        f"python3 -m venv {target_dir}/install/venv",
         # activate venv
         'echo "Activating venv"',
-        "sh {}/install/venv/bin/activate".format(target_dir),
+        f"sh {target_dir}/install/venv/bin/activate",
         # install pip dependencies
         'echo "Installing dependencies"',
-        "python3 -m pip install --no-cache-dir -r {0}/requirements.txt --no-index --find-links file:///{0}/packages".format(
-            os.path.join(target_dir, "install")
-        ),
+        f"python3 -m pip install --no-cache-dir -r {install_folder}/requirements.txt --no-index --find-links file:///{install_folder}/packages",
         # create file that signals finished installation
-        "touch {}/installed".format(target_dir),
+        f"touch {target_dir}/installed",
     ]
     subprocess_cmd("\n".join(lines))
 
@@ -278,7 +277,7 @@ def select_newest_package(directory, skipped_versions):
                     version = read_version(manifest_file)
                     if version is not None and (newest is None or newest < version):
                         newest = version
-                        print("Found version {}".format(version))
+                        print(f"Found version {version}")
                         newest_path = os.path.join(directory, dir_for_version(version))
     except FileNotFoundError:
         print("Failed to select newest package")
@@ -302,19 +301,19 @@ def start_framework(path):
     script_lives = True
     return_value = 0
     while script_lives:
-        print("Starting {}".format(path))
+        print(f"Starting {path}")
         lines = [
             # activate venv
-            "sh {}/install/venv/bin/activate".format(path),
+            f"sh {path}/install/venv/bin/activate",
             # start script
-            "python3 -u {}/revvy.py".format(path),
+            f"python3 -u {path}/revvy.py",
         ]
         try:
             return_value = subprocess_cmd("\n".join(lines))
         except KeyboardInterrupt:
             return_value = 0
 
-        print("Script exited with {}".format(return_value))
+        print(f"Script exited with {return_value}")
         if return_value == 1:
             # if script dies with error, restart [maybe measure runtime and if shorter than X and disable]
             pass
@@ -367,8 +366,8 @@ def startup(directory):
 
     data_directory = os.path.join(directory, "user", "ble")
 
-    print("Install directory: {}".format(install_directory))
-    print("Data directory: {}".format(data_directory))
+    print(f"Install directory: {install_directory}")
+    print(f"Data directory: {data_directory}")
 
     stop = False
     while not stop:
@@ -408,7 +407,7 @@ def startup(directory):
                     stop = True
                 elif return_value == 2:
                     # if script dies with integrity error, restart process and skip framework
-                    print("Integrity error - add {} to skipped list".format(path))
+                    print(f"Integrity error - add {path} to skipped list")
                     skipped_versions.append(path)
             else:
                 # if, for some reason there is no built-in package, stop
