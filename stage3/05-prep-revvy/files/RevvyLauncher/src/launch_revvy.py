@@ -16,8 +16,10 @@ from version import Version
 
 DEFAULT_PACKAGE_DIR = "default/packages"
 INSTALLED_PACKAGES_DIR = "user/packages"
+TEST_PACKAGE_DIR = "user/test_packages"
 DATA_DIRECTORY = "user/ble"
 
+DEV_PACKAGE_NAME = "pi-firmware"
 INSTALLED_DEV_PACKAGE_NAME = "dev-pi-firmware"
 
 
@@ -192,7 +194,9 @@ def yellow(s):
     return ansi_colored(s, "93")
 
 
-def install_update_package(install_directory, filename, is_dev_package: bool):
+def install_update_package(
+    install_directory, filename, is_dev_package: bool, remove_source: bool = True
+):
     """Install update package.
 
     Extracts, validates and installs the update package. If any step of this
@@ -218,13 +222,14 @@ def install_update_package(install_directory, filename, is_dev_package: bool):
 
     # try to extract package
     try:
-        print(f"Extracting update package to: {tmp_dir}")
         with tarfile.open(framework_update_file, "r:gz") as tar:
+            print(f"Extracting update package to: {tmp_dir}")
             tar.extractall(path=tmp_dir)
     except (ValueError, tarfile.TarError):
         print("Failed to extract package")
-        os.unlink(framework_update_file)
-        os.unlink(framework_update_meta_file)
+        if remove_source:
+            os.unlink(framework_update_file)
+            os.unlink(framework_update_meta_file)
         return
 
     # try to read package version
@@ -234,8 +239,9 @@ def install_update_package(install_directory, filename, is_dev_package: bool):
     if version_to_install is None:
         print("Failed to read package version")
         shutil.rmtree(tmp_dir)
-        os.unlink(framework_update_file)
-        os.unlink(framework_update_meta_file)
+        if remove_source:
+            os.unlink(framework_update_file)
+            os.unlink(framework_update_meta_file)
         return
 
     if is_dev_package:
@@ -253,8 +259,9 @@ def install_update_package(install_directory, filename, is_dev_package: bool):
             print(yellow("Trying to install an installed version, skipping"))
             # we don't want to install this package, remove sources
             shutil.rmtree(tmp_dir)
-            os.unlink(framework_update_file)
-            os.unlink(framework_update_meta_file)
+            if remove_source:
+                os.unlink(framework_update_file)
+                os.unlink(framework_update_meta_file)
             return
 
     print(f"Installing version: {version_to_install}")
@@ -279,8 +286,9 @@ def install_update_package(install_directory, filename, is_dev_package: bool):
     subprocess_cmd(lines)
 
     print("Removing update package")
-    os.unlink(framework_update_file)
-    os.unlink(framework_update_meta_file)
+    if remove_source:
+        os.unlink(framework_update_file)
+        os.unlink(framework_update_meta_file)
 
 
 def select_newest_package(directory, skipped_versions):
@@ -443,10 +451,51 @@ def start_newest_framework(skipped_versions: List[str]):
 
 
 def install_updates(install_directory):
-    if has_update_package(DATA_DIRECTORY, "pi-firmware"):
-        install_update_package(install_directory, "pi-firmware", True)
-    elif has_update_package(DATA_DIRECTORY, "2"):
-        install_update_package(install_directory, "2", False)
+    sources = [
+        (DEV_PACKAGE_NAME, True),
+        ("2", False),
+    ]
+
+    for package, is_dev in sources:
+        if has_update_package(DATA_DIRECTORY, package):
+            install_update_package(install_directory, package, is_dev)
+
+
+def install_test_package(test_package: str):
+    """Sets up the test environment.
+
+    Args:
+        test_package: Path to the test package.
+    """
+    print(f"Setting up test environment for {test_package}")
+
+    # Remove previous test package, if any
+    try:
+        shutil.rmtree(TEST_PACKAGE_DIR)
+    except FileNotFoundError:
+        pass
+
+    os.makedirs(TEST_PACKAGE_DIR, exist_ok=True)
+
+    # Install the test package
+    install_update_package(
+        TEST_PACKAGE_DIR, test_package, is_dev_package=True, remove_source=False
+    )
+
+
+def run_tests() -> int:
+    print(green(f"Running tests"))
+
+    lines = [
+        # activate venv
+        f"sh install/venv/bin/activate",
+        # start script
+        f"python3 -m tests.hil_tests",
+    ]
+    try:
+        return subprocess_cmd(lines)
+    except KeyboardInterrupt:
+        return -1
 
 
 def main():
@@ -470,24 +519,43 @@ def main():
         " and the filesystem must be writeable.",
         action="store_true",
     )
+    parser.add_argument(
+        "--setup",
+        help="Set up the given package as software under test",
+        action="store_true",
+    )
+    parser.add_argument(
+        "--test",
+        help="Run test scripts",
+        action="store_true",
+    )
 
     args = parser.parse_args()
 
-    skipped_versions = []
+    if args.test:
+        if args.setup:
+            install_test_package(DEV_PACKAGE_NAME)
 
-    if args.install_only and args.install_default:
-        install_directory = DEFAULT_PACKAGE_DIR
-    else:
-        install_directory = INSTALLED_PACKAGES_DIR
-
-    print(f"Install directory: {install_directory}")
-    print(f"Data directory: {DATA_DIRECTORY}")
+        print(f"Running tests")
+        old_path = os.getcwd()
+        try:
+            os.chdir(os.path.join(TEST_PACKAGE_DIR, INSTALLED_DEV_PACKAGE_NAME))
+            return run_tests()
+        finally:
+            os.chdir(old_path)
 
     if args.install_only:
+        if args.install_default:
+            install_directory = DEFAULT_PACKAGE_DIR
+        else:
+            install_directory = INSTALLED_PACKAGES_DIR
+
+        print(f"Install directory: {install_directory}")
+        print(f"Data directory: {DATA_DIRECTORY}")
         cleanup_invalid_installations(install_directory)
         install_updates(install_directory)
         print("--install-only flag is set, will not start framework")
-        return
+        return 0
 
     # Entering "normal" operation
     # Steps:
@@ -498,13 +566,14 @@ def main():
     # - If execution terminates with integrity_error, mark version as ignored and retry
     # - Otherwise restart the same version
 
+    skipped_versions = []
     while True:
-        cleanup_invalid_installations(install_directory)
-        install_updates(install_directory)
+        cleanup_invalid_installations(INSTALLED_PACKAGES_DIR)
+        install_updates(INSTALLED_PACKAGES_DIR)
 
         if start_newest_framework(skipped_versions):
             print("Exiting launcher")
-            return
+            return 0
 
 
 if __name__ == "__main__":
