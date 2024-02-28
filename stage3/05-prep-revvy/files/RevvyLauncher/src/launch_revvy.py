@@ -10,12 +10,13 @@ import hashlib
 import time
 import traceback
 from json import JSONDecodeError
+from typing import List
 from version import Version
 
 
 default_package_dir = "default/packages"
 installed_packages_dir = "user/packages"
-start_directories = [installed_packages_dir, default_package_dir]
+data_directory = "user/ble"
 
 
 def read_version(file):
@@ -75,6 +76,10 @@ def subprocess_cmd(command):
     Returns:
         Return code of execution
     """
+    # if we have a list, concatenate lines
+    if isinstance(command, list):
+        command = "\n".join(command)
+
     try:
         process = subprocess.Popen(
             command, stdout=subprocess.PIPE, shell=True, universal_newlines=True
@@ -98,15 +103,14 @@ def cleanup_invalid_installations(directory):
     Args:
         directory: Base directory, containing installations.
     """
-    print("Cleaning up invalid installations")
+    print("Cleaning up interrupted installations")
     try:
         for fw_dir in os.listdir(directory):
-            print(f"Checking {fw_dir}")
             fw_dir = os.path.join(directory, fw_dir)
             if os.path.isdir(fw_dir):
-                manifest_file = os.path.join(fw_dir, "installed")
-                if not os.path.isfile(manifest_file):
-                    print(f"Removing {fw_dir}")
+                marker_file = os.path.join(fw_dir, "installed")
+                if not os.path.isfile(marker_file):
+                    print(red(f"Removing {fw_dir}: missing 'installed' marker file"))
                     shutil.rmtree(fw_dir)
     except FileNotFoundError:
         print("No user packages exist")
@@ -124,7 +128,7 @@ def has_update_package(directory, filename):
     Returns:
         True if update package is present and valid.
     """
-    print(f"Looking for update files in {directory}")
+    print(f"Looking for '{filename}.data' update files in {directory}")
     framework_update_file = os.path.join(directory, f"{filename}.data")
     framework_update_meta_file = os.path.join(directory, f"{filename}.meta")
     update_file_valid = False
@@ -170,13 +174,29 @@ def dir_for_version(version):
     return f"revvy-{version}"
 
 
-def install_update_package(data_directory, install_directory, filename):
+def ansi_colored(s, color):
+    return f"\033[{color}m{s}\033[0m"
+
+
+def red(s):
+    return ansi_colored(s, "91")
+
+
+def green(s):
+    return ansi_colored(s, "92")
+
+
+def yellow(s):
+    return ansi_colored(s, "93")
+
+
+def install_update_package(install_directory, filename):
     """Install update package.
 
     Extracts, validates and installs the update package. If any step of this
     process fails tries to clean up, and remove the corrupt update package.
     Installation creates a virtualenv, installs required packages via pip from
-    a local repository, and places the 'installed' placeholder into the
+    a local repository, and places the 'installed' marker file into the
     directory, as the final step, to prove that installation finished
     successfully.
 
@@ -185,11 +205,13 @@ def install_update_package(data_directory, install_directory, filename):
         install_directory: Directory path with the fw installations.
     """
     framework_update_file = os.path.join(data_directory, f"{filename}.data")
+    # We have already validated the file, in this function we just clean up the meta file
+    # along with the update archive
     framework_update_meta_file = os.path.join(data_directory, f"{filename}.meta")
     tmp_dir = os.path.join(install_directory, "tmp")
 
     if os.path.isdir(tmp_dir):
-        print(f"Removing stuck tmp dir: {tmp_dir}")
+        print(yellow(f"Removing stuck tmp dir: {tmp_dir}"))
         shutil.rmtree(tmp_dir)  # probably failed update?
 
     # try to extract package
@@ -231,19 +253,19 @@ def install_update_package(data_directory, install_directory, filename):
     print("Running setup")
     install_folder = os.path.join(target_dir, "install")
     lines = [
-        # setup virtual env
         'echo "Setting up venv"',
         f"python3 -m venv {target_dir}/install/venv",
-        # activate venv
+        #
         'echo "Activating venv"',
         f"sh {target_dir}/install/venv/bin/activate",
-        # install pip dependencies
+        #
         'echo "Installing dependencies"',
         f"python3 -m pip install --no-cache-dir -r {install_folder}/requirements.txt --no-index --find-links file:///{install_folder}/packages",
-        # create file that signals finished installation
+        #
+        'echo "Creating marker file"',
         f"touch {target_dir}/installed",
     ]
-    subprocess_cmd("\n".join(lines))
+    subprocess_cmd(lines)
 
     print("Removing update package")
     os.unlink(framework_update_file)
@@ -271,14 +293,26 @@ def select_newest_package(directory, skipped_versions):
     try:
         for fw_dir in os.listdir(directory):
             fw_dir = os.path.join(directory, fw_dir)
-            if fw_dir not in skipped_versions:
-                manifest_file = os.path.join(fw_dir, "manifest.json")
-                if os.path.isfile(manifest_file):
-                    version = read_version(manifest_file)
-                    if version is not None and (newest is None or newest < version):
-                        newest = version
-                        print(f"Found version {version}")
-                        newest_path = os.path.join(directory, dir_for_version(version))
+            if fw_dir in skipped_versions:
+                continue
+
+            manifest_file = os.path.join(fw_dir, "manifest.json")
+            if not os.path.isfile(manifest_file):
+                print(f"Manifest file not found: {manifest_file}")
+                continue
+
+            version = read_version(manifest_file)
+            if version is None:
+                print(f"Failed to read version from {manifest_file}")
+                continue
+
+            print(f"Found version {version}")
+
+            if newest < version:
+                newest = version
+                newest_path = os.path.join(directory, dir_for_version(version))
+            else:
+                print(f"Skipping {version} - older than {newest}")
     except FileNotFoundError:
         print("Failed to select newest package")
         print(traceback.format_exc())
@@ -286,7 +320,21 @@ def select_newest_package(directory, skipped_versions):
     return newest_path
 
 
-def start_framework(path):
+# Manual exit. The loader will exit, too. Exiting with OK only makes sense if the package is
+# not managed by the revvy.service.
+FIRMWARE_RETURN_VALUE_OK = 0
+
+# An error has occurred. The loader is allowed to reload this package
+FIRMWARE_RETURN_VALUE_ERROR = 1
+
+# The loader should try to load a previous package
+FIRMWARE_RETURN_VALUE_INTEGRITY_ERROR = 2
+
+# The loader should try to install and load a new package
+FIRMWARE_RETURN_VALUE_UPDATE_REQUEST = 3
+
+
+def run_pi_firmware(path: str):
     """Runs revvy framework in its virtualenv.
 
     Args:
@@ -298,10 +346,9 @@ def start_framework(path):
         0 - OK
         other - ERROR, INTEGRITY_ERROR, UPDATE_REQUEST, etc...
     """
-    script_lives = True
-    return_value = 0
-    while script_lives:
-        print(f"Starting {path}")
+
+    while True:
+        print(green(f"Starting {path}"))
         lines = [
             # activate venv
             f"sh {path}/install/venv/bin/activate",
@@ -309,34 +356,89 @@ def start_framework(path):
             f"python3 -u {path}/revvy.py",
         ]
         try:
-            return_value = subprocess_cmd("\n".join(lines))
+            return_value = subprocess_cmd(lines)
         except KeyboardInterrupt:
-            return_value = 0
+            return_value = FIRMWARE_RETURN_VALUE_OK
 
         print(f"Script exited with {return_value}")
-        if return_value == 1:
-            # if script dies with error, restart [maybe measure runtime and if shorter than X and disable]
-            pass
-        else:
-            script_lives = False
+        if return_value == FIRMWARE_RETURN_VALUE_ERROR:
+            # if script dies with error, restart
+            # TODO: maybe measure runtime and if shorter than X then disable the package
+            print(yellow("Firmware exited with error, restarting"))
+            continue
 
-    return return_value
+        return return_value
 
 
-def startup(directory):
+def wait_for_board_powered():
+    # We use the AMP_EN pin as input to detect if the control board is on. The AMP_EN line
+    # has a pullup resistor, so it's high if the board is connected and powered.
+    # Due to some wiringpi weirdness, we use the header pin number for gpio mode and the
+    # wiringpi pin number for reading the value. Use `gpio readall` to see the pin numbers.
+    AMP_EN_HEADER_PIN = "22"
+    AMP_EN_WIRINGPI_PIN = "3"
+
+    # configure AMP_EN to input
+    subprocess_cmd(f"gpio -g mode {AMP_EN_HEADER_PIN} in")
+
+    # read AMP_EN to detect if Revvy is ON
+    amp_en = subprocess.check_output(["gpio", "read", AMP_EN_WIRINGPI_PIN])
+    while amp_en != b"1\n":
+        print("Device is off... waiting")
+        time.sleep(1)
+        amp_en = subprocess.check_output(["gpio", "read", AMP_EN_WIRINGPI_PIN])
+
+
+def start_newest_framework(skipped_versions: List[str]):
+    """Starts the newest framework version.
+
+    Returns True if the script should terminate, False if it should continue.
+    """
+
+    wait_for_board_powered()
+
+    # delay to wait hciuart device
+    time.sleep(1)
+
+    print("Looking for firmware packages")
+    path = select_newest_package(installed_packages_dir, skipped_versions)
+    if not path:
+        # if there is no such package, start the built in one
+        print("No user package found, trying default")
+        path = select_newest_package(default_package_dir, [])
+
+    if not path:
+        # if, for some reason there is no built-in package, stop
+        print("There are no more packages to try - exit")
+        return True
+
+    return_value = run_pi_firmware(path)
+    if return_value == FIRMWARE_RETURN_VALUE_OK:
+        print("Manual exit, exiting loader")
+        return True
+
+    if return_value == FIRMWARE_RETURN_VALUE_INTEGRITY_ERROR:
+        # if script dies with integrity error, mark the package as unstartable
+        # and try the next one
+        print(
+            f"Integrity error or otherwise unstartable package - add {path} to skipped list"
+        )
+        skipped_versions.append(path)
+
+    return False
+
+
+def install_updates(install_directory):
+    if has_update_package(data_directory, "pi-firmware"):
+        install_update_package(install_directory, "pi-firmware")
+    elif has_update_package(data_directory, "2"):
+        install_update_package(install_directory, "2")
+
+
+def main():
     """Runs revvy from directory.
 
     Handles the command line arguments of the script.
-    Currently the only one is --install-only, which terminates execution after
-    install.
-
-    Steps:
-    - Cleanup failed installations
-    - Search for fw update and install it
-    - Execute latest version
-    - If execution terminates normally, finish
-    - If execution terminates with integrity_error, exclude version and retry
-    - Otherwise restart the same version
 
     Args:
         directory: Base directory containing installed version of the revvy
@@ -360,68 +462,39 @@ def startup(directory):
     skipped_versions = []
 
     if args.install_only and args.install_default:
-        install_directory = os.path.join(directory, default_package_dir)
+        install_directory = default_package_dir
     else:
-        install_directory = os.path.join(directory, installed_packages_dir)
-
-    data_directory = os.path.join(directory, "user", "ble")
+        install_directory = installed_packages_dir
 
     print(f"Install directory: {install_directory}")
     print(f"Data directory: {data_directory}")
 
-    stop = False
-    while not stop:
+    if args.install_only:
         cleanup_invalid_installations(install_directory)
-        if has_update_package(data_directory, "pi-firmware"):
-            install_update_package(data_directory, install_directory, "pi-firmware")
-        elif has_update_package(data_directory, "2"):
-            install_update_package(data_directory, install_directory, "2")
+        install_updates(install_directory)
+        print("--install-only flag is set, will not start framework")
+        return
 
-        if args.install_only:
-            print("--install-only flag is set, exiting")
-            stop = True
-        else:
-            # configure AMP_EN to input
-            subprocess_cmd("gpio -g mode 22 in")
+    # Entering "normal" operation
+    # Steps:
+    # - Cleanup failed installations
+    # - Search for fw update and install it
+    # - Execute latest version
+    # - If execution terminates normally, exit launcher
+    # - If execution terminates with integrity_error, mark version as ignored and retry
+    # - Otherwise restart the same version
 
-            # read AMP_EN to detect if Revvy is ON
-            amp_en = subprocess.check_output(["gpio", "read", "3"])
-            while amp_en != b"1\n":
-                print("Device is off... waiting")
-                time.sleep(1)
-                amp_en = subprocess.check_output(["gpio", "read", "3"])
+    while True:
+        cleanup_invalid_installations(install_directory)
+        install_updates(install_directory)
 
-            print("Device is on, start framework")
-            # delay to wait hciuart device
-            time.sleep(1)
-            # try to look for a working update package
-            path = select_newest_package(install_directory, skipped_versions)
-            if not path:
-                # if there is no such package, start the built in one
-                path = select_newest_package(default_package_dir, [])
-
-            if path:
-                return_value = start_framework(path)
-                if return_value == 0:
-                    print("Manual exit")
-                    stop = True
-                elif return_value == 2:
-                    # if script dies with integrity error, restart process and skip framework
-                    print(f"Integrity error - add {path} to skipped list")
-                    skipped_versions.append(path)
-            else:
-                # if, for some reason there is no built-in package, stop
-                print("There are no more packages to try - exit")
-                stop = True
-
-
-def main(directory):
-    startup(directory)
-    # TODO: if script reaches this point, enter recovery mode
+        if start_newest_framework(skipped_versions):
+            print("Exiting launcher")
+            return
 
 
 if __name__ == "__main__":
     current_directory = os.path.dirname(__file__)
     current_directory = os.path.abspath(current_directory)
     os.chdir(current_directory)
-    main(current_directory)
+    main()
