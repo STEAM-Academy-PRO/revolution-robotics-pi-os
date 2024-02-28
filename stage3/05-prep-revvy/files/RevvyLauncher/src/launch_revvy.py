@@ -580,4 +580,5 @@ if __name__ == "__main__":
     current_directory = os.path.dirname(__file__)
     current_directory = os.path.abspath(current_directory)
     os.chdir(current_directory)
-    main()
+    exit_code = main()
+    sys.exit(exit_code)
