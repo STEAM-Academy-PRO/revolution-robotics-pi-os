@@ -14,9 +14,11 @@ from typing import List
 from version import Version
 
 
-default_package_dir = "default/packages"
-installed_packages_dir = "user/packages"
-data_directory = "user/ble"
+DEFAULT_PACKAGE_DIR = "default/packages"
+INSTALLED_PACKAGES_DIR = "user/packages"
+DATA_DIRECTORY = "user/ble"
+
+INSTALLED_DEV_PACKAGE_NAME = "dev-pi-firmware"
 
 
 def read_version(file):
@@ -204,10 +206,10 @@ def install_update_package(install_directory, filename, is_dev_package: bool):
         data_directory: Directory path containing the fw update.
         install_directory: Directory path with the fw installations.
     """
-    framework_update_file = os.path.join(data_directory, f"{filename}.data")
+    framework_update_file = os.path.join(DATA_DIRECTORY, f"{filename}.data")
     # We have already validated the file, in this function we just clean up the meta file
     # along with the update archive
-    framework_update_meta_file = os.path.join(data_directory, f"{filename}.meta")
+    framework_update_meta_file = os.path.join(DATA_DIRECTORY, f"{filename}.meta")
     tmp_dir = os.path.join(install_directory, "tmp")
 
     if os.path.isdir(tmp_dir):
@@ -236,7 +238,13 @@ def install_update_package(install_directory, filename, is_dev_package: bool):
         os.unlink(framework_update_meta_file)
         return
 
-    target_dir = os.path.join(install_directory, dir_for_version(version_to_install))
+    if is_dev_package:
+        package_folder_name = INSTALLED_DEV_PACKAGE_NAME
+    else:
+        package_folder_name = dir_for_version(version_to_install)
+
+    target_dir = os.path.join(install_directory, package_folder_name)
+
     if os.path.isdir(target_dir):
         if is_dev_package:
             print(yellow("Dev package, overwriting existing version"))
@@ -294,8 +302,8 @@ def select_newest_package(directory, skipped_versions):
 
     # find newest framework
     try:
-        for fw_dir in os.listdir(directory):
-            fw_dir = os.path.join(directory, fw_dir)
+        for fw_dir_name in os.listdir(directory):
+            fw_dir = os.path.join(directory, fw_dir_name)
             if fw_dir in skipped_versions:
                 continue
 
@@ -310,10 +318,13 @@ def select_newest_package(directory, skipped_versions):
                 continue
 
             print(f"Found version {version}")
+            if fw_dir_name == INSTALLED_DEV_PACKAGE_NAME:
+                print(green("Found dev package, stopping search"))
+                return fw_dir
 
             if newest < version:
                 newest = version
-                newest_path = os.path.join(directory, dir_for_version(version))
+                newest_path = fw_dir
             else:
                 print(f"Skipping {version} - older than {newest}")
     except FileNotFoundError:
@@ -404,11 +415,11 @@ def start_newest_framework(skipped_versions: List[str]):
     time.sleep(1)
 
     print("Looking for firmware packages")
-    path = select_newest_package(installed_packages_dir, skipped_versions)
+    path = select_newest_package(INSTALLED_PACKAGES_DIR, skipped_versions)
     if not path:
         # if there is no such package, start the built in one
         print("No user package found, trying default")
-        path = select_newest_package(default_package_dir, [])
+        path = select_newest_package(DEFAULT_PACKAGE_DIR, [])
 
     if not path:
         # if, for some reason there is no built-in package, stop
@@ -432,9 +443,9 @@ def start_newest_framework(skipped_versions: List[str]):
 
 
 def install_updates(install_directory):
-    if has_update_package(data_directory, "pi-firmware"):
+    if has_update_package(DATA_DIRECTORY, "pi-firmware"):
         install_update_package(install_directory, "pi-firmware", True)
-    elif has_update_package(data_directory, "2"):
+    elif has_update_package(DATA_DIRECTORY, "2"):
         install_update_package(install_directory, "2", False)
 
 
@@ -465,12 +476,12 @@ def main():
     skipped_versions = []
 
     if args.install_only and args.install_default:
-        install_directory = default_package_dir
+        install_directory = DEFAULT_PACKAGE_DIR
     else:
-        install_directory = installed_packages_dir
+        install_directory = INSTALLED_PACKAGES_DIR
 
     print(f"Install directory: {install_directory}")
-    print(f"Data directory: {data_directory}")
+    print(f"Data directory: {DATA_DIRECTORY}")
 
     if args.install_only:
         cleanup_invalid_installations(install_directory)
