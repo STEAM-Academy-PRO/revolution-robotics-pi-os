@@ -62,7 +62,8 @@ if [ -z ${FIRMWARE_RELEASE} ]; then
 
     tar -xvf pi-firmware.data
     cp install/requirements.txt "${ROOTFS_DIR}/home/pi/requirements.txt"
-    cp install/requirements.txt "${ROOTFS_DIR}/home/pi/requirements_test.txt"
+    cp install/requirements_test.txt "${ROOTFS_DIR}/home/pi/requirements_test.txt"
+
 elif [ -z ${FIRMWARE_REV} ]; then
     echo " Downloading latest firmware source "
     echo " WARNING: currently this package will not include the mcu-firmware!! "
@@ -79,7 +80,7 @@ elif [ -z ${FIRMWARE_REV} ]; then
     cp install/pi-firmware.meta "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.meta"
 
     cp install/requirements.txt "${ROOTFS_DIR}/home/pi/requirements.txt"
-    cp install/requirements.txt "${ROOTFS_DIR}/home/pi/requirements_test.txt"
+    cp install/requirements_test.txt "${ROOTFS_DIR}/home/pi/requirements_test.txt"
 
     echo "  Deleting pi-firmware sources "
     rm -rf revolution-robotics-robot-mind
