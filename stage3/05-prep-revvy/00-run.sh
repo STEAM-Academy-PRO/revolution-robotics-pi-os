@@ -39,6 +39,9 @@ install -m 644 files/revvy.service        "${ROOTFS_DIR}/etc/systemd/system/revv
 echo "  Copying launcher to ${ROOTFS_DIR}/home/pi/RevvyFramework"
 cp -r files/RevvyLauncher/src "${ROOTFS_DIR}/home/pi/RevvyFramework"
 
+echo "  Copying mjpg-streamer to ${ROOTFS_DIR}/home/pi/mjpg-streamer"
+cp -r files/mjpg-streamer "${ROOTFS_DIR}/home/pi/mjpg-streamer"
+
 on_chroot << EOF
 echo "  Setting permissions on data directory "
 chmod 755 -R /home/pi/RevvyFramework/
@@ -89,6 +92,8 @@ else
     echo " No firmware release or revision specified "
     exit 1
 fi
+
+
 
 echo " Deleting tempRF directory"
 cd ..
