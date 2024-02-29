@@ -490,7 +490,7 @@ def run_tests() -> int:
         # activate venv
         f"sh install/venv/bin/activate",
         # start script
-        f"python3 -m tests.hil_tests",
+        f"python3 -m tests.hil_tests.tests",
     ]
     try:
         return subprocess_cmd(lines)
