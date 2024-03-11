@@ -140,7 +140,7 @@ def has_update_package(directory, filename):
     if os.path.isfile(framework_update_file) and os.path.isfile(
         framework_update_meta_file
     ):
-        print("Found update file, validating...")
+        print(f"Found update file {framework_update_file}, validating...")
         try:
             with open(framework_update_meta_file, "r") as fup_mf:
                 metadata = json.load(fup_mf)
