@@ -1,7 +1,7 @@
 [Unit]
 Description=Revvy service
-After=bluetooth.target network.target sound.target hciuart.service polkit.service
-Wants=bluetooth.target network.target sound.target hciuart.service dhcpcd.service systemd-logind.service dbus.service
+After=bluetooth.service network.target sound.target hciuart.service polkit.service
+Wants=bluetooth.service network.target sound.target multi-user.target hciuart.service dhcpcd.service systemd-logind.service dbus.service
 StartLimitIntervalSec=1
 
 [Service]
@@ -12,4 +12,4 @@ User=pi
 ExecStart=/usr/bin/env python3 /home/pi/RevvyFramework/launch_revvy.py
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=bluetooth.target
