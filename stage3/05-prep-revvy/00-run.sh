@@ -36,7 +36,21 @@ sudo systemctl disable raspberrypi-net-mods.service
 sudo systemctl disable raspi-config.service
 sudo systemctl disable dhcpcd.service
 sudo systemctl disable e2scrub_reap.service
+sudo systemctl disable sys-kernel-debug.mount
+sudo systemctl disable sys-kernel-tracing.mount
 # sudo systemctl disable avahi-daemon.service # disabling breaks USB-ethernet
+
+# anything remote-fs
+sudo systemctl disable nfs-client.target
+sudo systemctl disable remote-fs.target
+sudo systemctl disable remote-fs-pre.target
+sudo systemctl mask nfs-config.service
+
+sudo systemctl disable busybox-klogd.service
+sudo systemctl disable busybox-syslogd.service
+sudo systemctl mask systemd-journald.service
+sudo systemctl disable systemd-journal-flush.service
+sudo chmod -x /etc/rc.local
 
 # enable ssh by default
 sudo systemctl enable ssh
