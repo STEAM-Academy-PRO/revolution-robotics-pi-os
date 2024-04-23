@@ -31,6 +31,14 @@ sudo systemctl disable wpa_supplicant.service
 sudo systemctl disable keyboard-setup.service
 sudo systemctl disable graphical.target
 sudo systemctl disable sshswitch
+sudo systemctl disable rpi-eeprom-update.service
+sudo systemctl disable raspberrypi-net-mods.service
+sudo systemctl disable raspi-config.service
+sudo systemctl disable systemd-tmpfiles-setup.service
+sudo systemctl disable dhcpcd.service
+sudo systemctl disable e2scrub_reap.service
+sudo systemctl disable e2scrub_reap.timer
+# sudo systemctl disable avahi-daemon.service # disabling breaks USB-ethernet
 
 # enable ssh by default
 sudo systemctl enable ssh
