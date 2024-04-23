@@ -65,7 +65,7 @@ if [ -z ${FIRMWARE_RELEASE} ]; then
 
     tar -xvf pi-firmware.data
     cp install/requirements.txt "${ROOTFS_DIR}/home/pi/requirements.txt"
-    cp install/requirements_test.txt "${ROOTFS_DIR}/home/pi/requirements_test.txt"
+    cp install/requirements_dev.txt "${ROOTFS_DIR}/home/pi/requirements_dev.txt"
 
 elif [ -z ${FIRMWARE_REV} ]; then
     echo " Downloading latest firmware source "
@@ -83,7 +83,7 @@ elif [ -z ${FIRMWARE_REV} ]; then
     cp install/pi-firmware.meta "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.meta"
 
     cp install/requirements.txt "${ROOTFS_DIR}/home/pi/requirements.txt"
-    cp install/requirements_test.txt "${ROOTFS_DIR}/home/pi/requirements_test.txt"
+    cp install/requirements_dev.txt "${ROOTFS_DIR}/home/pi/requirements_dev.txt"
 
     echo "  Deleting pi-firmware sources "
     rm -rf revolution-robotics-robot-mind
@@ -103,10 +103,10 @@ rm -rf tempRF
 on_chroot << EOF
 echo "  Install requirements"
 pip3 install -r /home/pi/requirements.txt
-pip3 install -r /home/pi/requirements_test.txt
+pip3 install -r /home/pi/requirements_dev.txt
 
 rm /home/pi/requirements.txt
-rm /home/pi/requirements_test.txt
+rm /home/pi/requirements_dev.txt
 
 echo "  Install the included package to the read-only part"
 python3 /home/pi/RevvyFramework/launch_revvy.py --install-only --install-default
