@@ -30,7 +30,7 @@ sudo systemctl disable rpi-eeprom-update.service
 sudo systemctl disable raspberrypi-net-mods.service
 sudo systemctl disable raspi-config.service
 sudo systemctl disable dhcpcd.service
-sudo systemctl disable e2scrub_reap.service
+sudo systemctl mask e2scrub_reap.service
 sudo systemctl disable sys-kernel-debug.mount
 sudo systemctl disable sys-kernel-tracing.mount
 # sudo systemctl disable avahi-daemon.service # disabling breaks USB-ethernet
