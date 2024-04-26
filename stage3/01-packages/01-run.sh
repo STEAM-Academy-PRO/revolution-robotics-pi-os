@@ -27,7 +27,7 @@ sudo systemctl disable dhcpcd.service
 sudo systemctl mask e2scrub_reap.service
 sudo systemctl disable sys-kernel-debug.mount
 sudo systemctl disable sys-kernel-tracing.mount
-# sudo systemctl disable avahi-daemon.service # disabling breaks USB-ethernet
+# sudo systemctl disable avahi-daemon.service # disabling breaks USB-ethernet. we may want to do this on the release images provided we save time
 
 # anything remote-fs
 sudo systemctl disable nfs-client.target
@@ -42,16 +42,11 @@ sudo systemctl disable systemd-journal-flush.service
 sudo chmod -x /etc/rc.local
 sudo systemctl disable rng-tools-debian.service
 
-sudo apt remove libx11* -y
-
 echo "  Remove unused packages"
 sudo apt-get remove --purge -y triggerhappy logrotate cron
-# remove avahi-daemon?
-# apt-get remove --purge -y avahi-daemon
 # update logging (from medium/swlh). should do? logread to see logs
 # sudo apt-get install -y busybox-syslogd
 sudo apt-get remove --purge -y rsyslog
-# sudo apt-get remove --purge -y git-man
 sudo apt-get autoremove --purge -y
 
 EOF
