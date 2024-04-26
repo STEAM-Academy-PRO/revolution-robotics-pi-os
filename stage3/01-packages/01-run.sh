@@ -4,12 +4,6 @@ echo " Disabling/removing things that are not needed "
 
 on_chroot << EOF
 
-# disable swapping
-sudo dphys-swapfile swapoff
-sudo dphys-swapfile uninstall
-sudo update-rc.d dphys-swapfile remove
-sudo apt purge -y dphys-swapfile
-
 # disable services that are not needed
 sudo systemctl disable systemd-update-utmp.service
 sudo systemctl mask systemd-update-utmp.service
