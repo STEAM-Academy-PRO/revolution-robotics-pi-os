@@ -10,3 +10,5 @@ FIRMWARE_RELEASE=v1568
 # or
 # FIRMWARE_REV=2bab6b15d30c049682ef03e1406aa951da178520
 
+# Set to 1 to enable extra features (and potentially slower boot time)
+DEV_IMAGE=0
