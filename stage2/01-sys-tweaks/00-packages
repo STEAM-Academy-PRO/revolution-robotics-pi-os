@@ -10,24 +10,24 @@ luajit
 hardlink ca-certificates curl
 fake-hwclock nfs-common usbutils
 libraspberrypi-dev libraspberrypi-doc libfreetype6-dev
-dosfstools
-dphys-swapfile
+# dosfstools
+# dphys-swapfile
 raspberrypi-sys-mods
 pi-bluetooth
 apt-listchanges
 usb-modeswitch
 libpam-chksshpwd
 rpi-update
-libmtp-runtime
-rsync
-htop
+# libmtp-runtime
+# rsync
+# htop
 man-db
 policykit-1
 ssh-import-id
-rng-tools
+# rng-tools
 ethtool
-ntfs-3g
-pciutils
+# ntfs-3g
+# pciutils
 rpi-eeprom
 raspinfo
 udisks2
