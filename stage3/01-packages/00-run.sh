@@ -53,6 +53,14 @@ sudo systemctl enable ssh
 
 sudo apt remove libx11* -y
 
-sudo apt autoremove -y
+echo "  Remove unused packages"
+sudo apt-get remove --purge -y triggerhappy logrotate cron
+# remove avahi-daemon?
+# apt-get remove --purge -y avahi-daemon
+# update logging (from medium/swlh). should do? logread to see logs
+# sudo apt-get install -y busybox-syslogd
+sudo apt-get remove --purge -y rsyslog
+# sudo apt-get remove --purge -y git-man
+sudo apt-get autoremove --purge -y
 
 EOF

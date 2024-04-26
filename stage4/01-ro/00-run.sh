@@ -2,28 +2,6 @@
 
 on_chroot << EOF
 
-echo "  Remove unused packages"
-sudo apt-get remove --purge -y triggerhappy logrotate cron
-# remove avahi-daemon?
-# apt-get remove --purge -y avahi-daemon
-# update logging (from medium/swlh). should do? logread to see logs
-# sudo apt-get install -y busybox-syslogd
-# sudo apt-get install wiringpi
-sudo apt-get remove --purge -y rsyslog
-# sudo apt-get remove --purge -y git-man
-sudo apt-get autoremove --purge -y
-
-if [[ -d "WiringPi" ]]
-then rm -r WiringPi
-fi
-
-#pip install wiringpi
-git clone https://github.com/WiringPi/WiringPi
-cd WiringPi
-./build
-cd ..
-rm -r WiringPi
-
 echo "  ROize randomseed"
 if [[ -L "/var/lib/systemd/random-seed" ]]
 then rm /var/lib/systemd/random-seed
