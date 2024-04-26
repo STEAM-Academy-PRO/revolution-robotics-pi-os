@@ -48,9 +48,6 @@ sudo systemctl disable systemd-journal-flush.service
 sudo chmod -x /etc/rc.local
 sudo systemctl disable rng-tools-debian.service
 
-# enable ssh by default
-sudo systemctl enable ssh
-
 sudo apt remove libx11* -y
 
 echo "  Remove unused packages"
