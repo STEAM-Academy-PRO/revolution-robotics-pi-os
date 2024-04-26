@@ -28,16 +28,13 @@ EOF
 
 rm -rf WiringPi
 
-# End of Wiringpi
+# Revvy service and launcher
 
 echo "  Deploy python service "
 install -m 644 files/revvy.service        "${ROOTFS_DIR}/etc/systemd/system/revvy.service"
 
 echo "  Copying launcher to ${ROOTFS_DIR}/home/pi/RevvyFramework"
 cp -r files/RevvyLauncher/src "${ROOTFS_DIR}/home/pi/RevvyFramework"
-
-echo "  Copying mjpg-streamer to ${ROOTFS_DIR}/home/pi/mjpg-streamer"
-cp -r files/mjpg-streamer "${ROOTFS_DIR}/home/pi/mjpg-streamer"
 
 on_chroot << EOF
 echo "  Setting permissions on data directory "
@@ -90,12 +87,9 @@ else
     exit 1
 fi
 
-
-
 echo " Deleting tempRF directory"
 cd ..
 rm -rf tempRF
-
 
 on_chroot << EOF
 echo "  Install requirements"
