@@ -42,7 +42,7 @@ sudo systemctl disable remote-fs-pre.target
 sudo systemctl mask nfs-config.service
 
 sudo systemctl disable busybox-klogd.service
-sudo systemctl disable busybox-syslogd.service
+# sudo systemctl disable busybox-syslogd.service
 sudo systemctl mask systemd-journald.service
 sudo systemctl disable systemd-journal-flush.service
 sudo chmod -x /etc/rc.local
