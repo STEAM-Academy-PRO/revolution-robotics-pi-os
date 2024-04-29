@@ -26,9 +26,6 @@ sudo systemctl disable keyboard-setup.service
 sudo systemctl disable graphical.target
 sudo systemctl disable sshswitch
 
-# enable ssh by default
-sudo systemctl enable ssh
-
 EOF
 
 echo "  Deploy python service "
