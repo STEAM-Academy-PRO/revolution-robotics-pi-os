@@ -9,8 +9,12 @@ sudo apt-get remove --purge -y triggerhappy logrotate cron
 # update logging (from medium/swlh). should do? logread to see logs
 # sudo apt-get install -y busybox-syslogd
 sudo apt-get remove --purge -y rsyslog
-sudo apt-get remove --purge -y rng-tools-debian
-#sudo apt-get remove --purge -y git-man
+
+# Some extras we remove to shrink the image
+sudo apt remove -y rng-tools-debian
+sudo apt remove -y libgraphite2-3
+sudo apt remove -y fontconfig
+
 sudo apt-get autoremove --purge -y
 
 echo "  ROize randomseed"
