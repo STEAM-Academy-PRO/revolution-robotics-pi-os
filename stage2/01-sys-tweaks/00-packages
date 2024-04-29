@@ -12,13 +12,13 @@ fake-hwclock nfs-common usbutils
 libraspberrypi-dev libraspberrypi-doc libfreetype6-dev
 # dosfstools
 # dphys-swapfile
-raspberrypi-sys-mods
+# raspberrypi-sys-mods
 pi-bluetooth
 apt-listchanges
 usb-modeswitch
 libpam-chksshpwd
 rpi-update
-libmtp-runtime
+# libmtp-runtime
 # rsync
 # htop
 # man-db
@@ -29,6 +29,6 @@ ethtool
 # ntfs-3g
 # pciutils
 # rpi-eeprom
-raspinfo
+# raspinfo
 udisks2
 unzip zip p7zip-full
