@@ -28,6 +28,25 @@ sudo systemctl disable sshswitch
 
 EOF
 
+# Wiringpi
+
+echo " Install wiringpi "
+
+git clone https://github.com/WiringPi/WiringPi
+
+cp -r WiringPi "${ROOTFS_DIR}/home/pi/WiringPi"
+
+on_chroot << EOF
+cd /home/pi/WiringPi
+./build
+cd ..
+rm -rf WiringPi
+EOF
+
+rm -rf WiringPi
+
+# Revvy service and launcher
+
 echo "  Deploy python service "
 install -m 644 files/revvy.service        "${ROOTFS_DIR}/etc/systemd/system/revvy.service"
 
