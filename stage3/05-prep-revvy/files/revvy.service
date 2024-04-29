@@ -1,7 +1,7 @@
 [Unit]
 Description=Revvy service
-After=bluetooth.service network.target sound.target hciuart.service polkit.service
-Wants=bluetooth.service network.target sound.target multi-user.target hciuart.service dhcpcd.service systemd-logind.service dbus.service
+After=bluetooth.service sound.target hciuart.service polkit.service
+Wants=bluetooth.service sound.target hciuart.service dbus.service
 StartLimitIntervalSec=1
 
 [Service]
