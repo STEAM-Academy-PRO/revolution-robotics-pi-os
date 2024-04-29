@@ -14,6 +14,7 @@ sudo apt-get remove --purge -y rsyslog
 sudo apt remove -y rng-tools-debian
 sudo apt remove -y libgraphite2-3
 sudo apt remove -y fontconfig
+sudo apt remove -y man-db
 
 sudo apt-get autoremove --purge -y
 
