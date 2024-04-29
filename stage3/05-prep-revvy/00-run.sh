@@ -18,8 +18,8 @@ sudo systemctl disable apt-daily.timer
 sudo systemctl disable apt-daily-upgrade.service
 sudo systemctl mask apt-daily-upgrade.service
 sudo systemctl disable apt-daily-upgrade.timer
-sudo systemctl disable man-db.service
-sudo systemctl disable man-db.timer
+# sudo systemctl disable man-db.service
+# sudo systemctl disable man-db.timer
 sudo systemctl disable systemd-timesyncd.service
 sudo systemctl disable wpa_supplicant.service
 sudo systemctl disable keyboard-setup.service

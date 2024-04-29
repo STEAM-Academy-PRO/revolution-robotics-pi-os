@@ -39,7 +39,7 @@ rm -f /etc/systemd/system/dhcpcd.service.d/wait.conf
 echo "  Stop mask systemd timers/services"
 systemctl disable systemd-tmpfiles-clean.timer systemd-tmpfiles-clean
 systemctl disable cron
-systemctl mask systemd-update-utmp systemd-update-utmp-runlevel 
+systemctl mask systemd-update-utmp systemd-update-utmp-runlevel
 systemctl mask systemd-rfkill systemd-rfkill.socket  # enable/disable wireless devices, bluetooth
 systemctl disable systemd-fsck-root
 
