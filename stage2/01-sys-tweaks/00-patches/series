@@ -2,4 +2,4 @@
 # 02-swap.diff
 04-inputrc.diff
 05-path.diff
-07-resize-init.diff
+# 07-resize-init.diff # resize2fs_once removed by danielb
