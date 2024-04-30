@@ -9,6 +9,20 @@ echo "  Enable raw sockets for python for BT "
 echo "  Enable i2c module "
 echo "i2c-dev" >> /etc/modules
 
+# remove unnecessary systemd generators
+sudo unlink /lib/systemd/user-generators/systemd-xdg-autostart-generator
+
+sudo unlink /lib/systemd/system-generators/systemd-debug-generator
+sudo unlink /lib/systemd/system-generators/systemd-hibernate-resume-generator
+sudo unlink /lib/systemd/system-generators/systemd-system-update-generator
+sudo unlink /lib/systemd/system-generators/systemd-cryptsetup-generator
+sudo unlink /lib/systemd/system-generators/systemd-gpt-auto-generator
+sudo unlink /lib/systemd/system-generators/systemd-bless-boot-generator
+sudo unlink /lib/systemd/system-generators/systemd-run-generator
+sudo unlink /lib/systemd/system-generators/systemd-sysv-generator
+sudo unlink /lib/systemd/system-generators/systemd-veritysetup-generator
+sudo unlink /lib/systemd/system-generators/systemd-rc-local-generator
+
 # disable services that are not needed
 sudo systemctl disable systemd-update-utmp.service
 sudo systemctl mask systemd-update-utmp.service
@@ -27,8 +41,10 @@ sudo systemctl disable sshswitch
 sudo systemctl mask nfs-client
 sudo systemctl mask nfs-config
 
+sudo systemctl mask systemd-bless-boot.service
 sudo systemctl mask systemd-journald
 sudo systemctl disable rpi-eeprom-update
+sudo systemctl mask rc-local.service
 
 EOF
 
