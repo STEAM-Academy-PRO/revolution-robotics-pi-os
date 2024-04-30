@@ -41,7 +41,7 @@
 +dtoverlay=disable-wifi
 +
 +# USB ethernet
-+# dtoverlay=dwc2
++dtoverlay=dwc2
 +
 +# Disable some features to speed up boot
 +disable_splash=1
