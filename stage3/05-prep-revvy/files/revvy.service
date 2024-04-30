@@ -1,8 +1,7 @@
 [Unit]
 Description=Revvy service
-After=bluetooth.service sound.target hciuart.service polkit.service
-Wants=bluetooth.service sound.target hciuart.service dbus.service
 StartLimitIntervalSec=1
+After=hciuart.service
 
 [Service]
 Type=simple
