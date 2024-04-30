@@ -43,6 +43,7 @@ sudo systemctl mask nfs-config
 
 sudo systemctl mask systemd-bless-boot.service
 sudo systemctl mask systemd-journald
+sudo systemctl mask systemd-journal-flush
 sudo systemctl disable rpi-eeprom-update
 sudo systemctl mask rc-local.service
 
