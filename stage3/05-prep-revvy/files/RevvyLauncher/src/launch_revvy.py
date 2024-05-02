@@ -5,22 +5,16 @@ import os
 import shutil
 import subprocess
 import sys
-import tarfile
-import hashlib
 import time
 import traceback
-from json import JSONDecodeError
-from typing import List
 from version import Version
 
 
 DEFAULT_PACKAGE_DIR = "default/packages"
 INSTALLED_PACKAGES_DIR = "user/packages"
-TEST_PACKAGE_DIR = "user/test_packages"
 DATA_DIRECTORY = "user/ble"
 
 DEV_PACKAGE_NAME = "pi-firmware"
-INSTALLED_DEV_PACKAGE_NAME = "dev-pi-firmware"
 
 
 def read_version(file):
@@ -39,7 +33,7 @@ def read_version(file):
         return Version(manifest["version"])
     except FileNotFoundError:
         print(f"File not found: {file}")
-    except JSONDecodeError:
+    except json.JSONDecodeError:
         print(f"Invalid json file: {file}")
     except KeyError:
         print(f"Json file is valid but there is no version in it: {file}")
@@ -60,6 +54,8 @@ def file_hash(file):
     Raises:
         IOError: An error occurred during opening/reading the file.
     """
+    import hashlib
+
     try:
         hash_fn = hashlib.md5()
         with open(file, "rb") as f:
@@ -97,6 +93,11 @@ def subprocess_cmd(command):
         return 0
 
 
+def is_valid_package(directory):
+    marker_file = os.path.join(directory, "installed")
+    return os.path.isfile(marker_file)
+
+
 def cleanup_invalid_installations(directory):
     """Removes incomplete versions of fw installations.
 
@@ -111,11 +112,10 @@ def cleanup_invalid_installations(directory):
     try:
         for fw_dir in os.listdir(directory):
             fw_dir = os.path.join(directory, fw_dir)
-            if os.path.isdir(fw_dir):
-                marker_file = os.path.join(fw_dir, "installed")
-                if not os.path.isfile(marker_file):
-                    print(red(f"Removing {fw_dir}: missing 'installed' marker file"))
-                    shutil.rmtree(fw_dir)
+
+            if not is_valid_package(fw_dir):
+                print(red(f"Removing {fw_dir}: missing 'installed' marker file"))
+                shutil.rmtree(fw_dir)
     except FileNotFoundError:
         print("No user packages exist")
 
@@ -156,7 +156,7 @@ def has_update_package(directory, filename):
                     print("Update file length mismatch")
         except IOError:
             print("Failed to read metadata")
-        except (JSONDecodeError, KeyError):
+        except (json.JSONDecodeError, KeyError):
             print("Update metadata corrupted, skipping update")
 
         if not update_file_valid:
@@ -194,9 +194,7 @@ def yellow(s):
     return ansi_colored(s, "93")
 
 
-def install_update_package(
-    install_directory, filename, is_dev_package: bool, remove_source: bool = True
-):
+def install_update_package(install_directory, filename, remove_source: bool = True):
     """Install update package.
 
     Extracts, validates and installs the update package. If any step of this
@@ -210,6 +208,8 @@ def install_update_package(
         data_directory: Directory path containing the fw update.
         install_directory: Directory path with the fw installations.
     """
+    import tarfile
+
     framework_update_file = os.path.join(DATA_DIRECTORY, f"{filename}.data")
     # We have already validated the file, in this function we just clean up the meta file
     # along with the update archive
@@ -244,25 +244,18 @@ def install_update_package(
             os.unlink(framework_update_meta_file)
         return
 
-    if is_dev_package:
-        package_folder_name = INSTALLED_DEV_PACKAGE_NAME
-    else:
-        package_folder_name = dir_for_version(version_to_install)
+    package_folder_name = dir_for_version(version_to_install)
 
     target_dir = os.path.join(install_directory, package_folder_name)
 
     if os.path.isdir(target_dir):
-        if is_dev_package:
-            print(yellow("Dev package, overwriting existing version"))
-            shutil.rmtree(target_dir)
-        else:
-            print(yellow("Trying to install an installed version, skipping"))
-            # we don't want to install this package, remove sources
-            shutil.rmtree(tmp_dir)
-            if remove_source:
-                os.unlink(framework_update_file)
-                os.unlink(framework_update_meta_file)
-            return
+        print(yellow("Trying to install an installed version, skipping"))
+        # we don't want to install this package, remove sources
+        shutil.rmtree(tmp_dir)
+        if remove_source:
+            os.unlink(framework_update_file)
+            os.unlink(framework_update_meta_file)
+        return
 
     print(f"Installing version: {version_to_install}")
     print(f"Renaming {tmp_dir} to {target_dir}")
@@ -291,11 +284,14 @@ def install_update_package(
         os.unlink(framework_update_meta_file)
 
 
-def select_newest_package(directory, skipped_versions):
+def select_newest_package(directory, skipped_versions, is_default: bool = False):
     """Finds latest, non blacklisted framework version.
 
     Checks all subdirectories in directory, reads the version information from
     the manifest.json files.
+
+    This function also cleans up invalid installations that might be left behind by
+    cutting power during installation, for exampl.
 
     Args:
         directory: Base directory of installed frameworks.
@@ -315,6 +311,12 @@ def select_newest_package(directory, skipped_versions):
             if fw_dir in skipped_versions:
                 continue
 
+            if not is_valid_package(fw_dir):
+                if not is_default:
+                    print(red(f"Removing {fw_dir}: missing 'installed' marker file"))
+                    shutil.rmtree(fw_dir)
+                continue
+
             manifest_file = os.path.join(fw_dir, "manifest.json")
             if not os.path.isfile(manifest_file):
                 print(f"Manifest file not found: {manifest_file}")
@@ -326,9 +328,6 @@ def select_newest_package(directory, skipped_versions):
                 continue
 
             print(f"Found version {version}")
-            if fw_dir_name == INSTALLED_DEV_PACKAGE_NAME:
-                print(green("Found dev package, stopping search"))
-                return fw_dir
 
             if newest < version:
                 newest = version
@@ -411,7 +410,7 @@ def wait_for_board_powered():
         amp_en = subprocess.check_output(["gpio", "read", AMP_EN_WIRINGPI_PIN])
 
 
-def start_newest_framework(skipped_versions: List[str]):
+def start_newest_framework(skipped_versions: list[str]):
     """Starts the newest framework version.
 
     Returns True if the script should terminate, False if it should continue.
@@ -427,7 +426,7 @@ def start_newest_framework(skipped_versions: List[str]):
     if not path:
         # if there is no such package, start the built in one
         print("No user package found, trying default")
-        path = select_newest_package(DEFAULT_PACKAGE_DIR, [])
+        path = select_newest_package(DEFAULT_PACKAGE_DIR, [], is_default=True)
 
     if not path:
         # if, for some reason there is no built-in package, stop
@@ -451,36 +450,9 @@ def start_newest_framework(skipped_versions: List[str]):
 
 
 def install_updates(install_directory):
-    sources = [
-        (DEV_PACKAGE_NAME, True),
-        ("2", False),
-    ]
-
-    for package, is_dev in sources:
-        if has_update_package(DATA_DIRECTORY, package):
-            install_update_package(install_directory, package, is_dev)
-
-
-def install_test_package(test_package: str):
-    """Sets up the test environment.
-
-    Args:
-        test_package: Path to the test package.
-    """
-    print(f"Setting up test environment for {test_package}")
-
-    # Remove previous test package, if any
-    try:
-        shutil.rmtree(TEST_PACKAGE_DIR)
-    except FileNotFoundError:
-        pass
-
-    os.makedirs(TEST_PACKAGE_DIR, exist_ok=True)
-
-    # Install the test package
-    install_update_package(
-        TEST_PACKAGE_DIR, test_package, is_dev_package=True, remove_source=False
-    )
+    if has_update_package(DATA_DIRECTORY, "2"):
+        cleanup_invalid_installations(INSTALLED_PACKAGES_DIR)
+        install_update_package(install_directory, "2")
 
 
 def run_tests() -> int:
@@ -531,11 +503,6 @@ def main() -> int:
         action="store_true",
     )
     parser.add_argument(
-        "--test",
-        help="Run test scripts",
-        action="store_true",
-    )
-    parser.add_argument(
         "--service",
         help="The script has been started by a systemd service.",
         action="store_true",
@@ -558,18 +525,6 @@ def main() -> int:
                 print("Started on Raspberry Pi Zero a second time, exiting")
                 return 0
 
-    if args.test:
-        if args.setup:
-            install_test_package(DEV_PACKAGE_NAME)
-
-        print(f"Running tests")
-        old_path = os.getcwd()
-        try:
-            os.chdir(os.path.join(TEST_PACKAGE_DIR, INSTALLED_DEV_PACKAGE_NAME))
-            return run_tests()
-        finally:
-            os.chdir(old_path)
-
     if args.install_only:
         if args.install_default:
             install_directory = DEFAULT_PACKAGE_DIR
@@ -578,7 +533,6 @@ def main() -> int:
 
         print(f"Install directory: {install_directory}")
         print(f"Data directory: {DATA_DIRECTORY}")
-        cleanup_invalid_installations(install_directory)
         install_updates(install_directory)
         print("--install-only flag is set, will not start framework")
         return 0
@@ -594,7 +548,6 @@ def main() -> int:
 
     skipped_versions = []
     while True:
-        cleanup_invalid_installations(INSTALLED_PACKAGES_DIR)
         install_updates(INSTALLED_PACKAGES_DIR)
 
         if start_newest_framework(skipped_versions):
