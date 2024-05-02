@@ -1,7 +1,6 @@
 [Unit]
 Description=Revvy service, early start for the RPi Zero W
 StartLimitIntervalSec=1
-After=hciuart.service
 
 [Service]
 Type=simple
