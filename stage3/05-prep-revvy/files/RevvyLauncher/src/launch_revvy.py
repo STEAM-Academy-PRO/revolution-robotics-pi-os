@@ -277,6 +277,9 @@ def install_update_package(install_directory, filename, remove_source: bool = Tr
         'echo "Installing dependencies"',
         f"python3 -m pip install --no-cache-dir -r {install_folder}/requirements.txt --no-index --find-links file:///{install_folder}/packages",
         #
+        'echo "Run the installed script with --prime to generate initial pycache"',
+        f"python3 -u {target_dir}/revvy.py --prime",
+        #
         'echo "Creating marker file"',
         f"touch {target_dir}/installed",
     ]
