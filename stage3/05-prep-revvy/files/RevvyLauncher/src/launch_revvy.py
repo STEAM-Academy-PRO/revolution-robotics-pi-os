@@ -17,6 +17,10 @@ DATA_DIRECTORY = "user/ble"
 DEV_PACKAGE_NAME = "pi-firmware"
 
 
+def log(msg: str):
+    print(msg)
+
+
 def read_version(file):
     """Reads version from json formatted manifest file.
 
@@ -32,11 +36,11 @@ def read_version(file):
             manifest = json.load(mf)
         return Version(manifest["version"])
     except FileNotFoundError:
-        print(f"File not found: {file}")
+        log(f"File not found: {file}")
     except json.JSONDecodeError:
-        print(f"Invalid json file: {file}")
+        log(f"Invalid json file: {file}")
     except KeyError:
-        print(f"Json file is valid but there is no version in it: {file}")
+        log(f"Json file is valid but there is no version in it: {file}")
 
     return None
 
@@ -62,8 +66,8 @@ def file_hash(file):
             hash_fn.update(f.read())
         return hash_fn.hexdigest()
     except IOError:
-        print(f"Could not calculate hash for {file}")
-        print(traceback.format_exc())
+        log(f"Could not calculate hash for {file}")
+        log(traceback.format_exc())
         return None
 
 
@@ -108,16 +112,16 @@ def cleanup_invalid_installations(directory):
     Args:
         directory: Base directory, containing installations.
     """
-    print("Cleaning up interrupted installations")
+    log("Cleaning up interrupted installations")
     try:
         for fw_dir in os.listdir(directory):
             fw_dir = os.path.join(directory, fw_dir)
 
             if not is_valid_package(fw_dir):
-                print(red(f"Removing {fw_dir}: missing 'installed' marker file"))
+                log(red(f"Removing {fw_dir}: missing 'installed' marker file"))
                 shutil.rmtree(fw_dir)
     except FileNotFoundError:
-        print("No user packages exist")
+        log("No user packages exist")
 
 
 def has_update_package(directory, filename):
@@ -132,7 +136,7 @@ def has_update_package(directory, filename):
     Returns:
         True if update package is present and valid.
     """
-    print(f"Looking for '{filename}.data' update files in {directory}")
+    log(f"Looking for '{filename}.data' update files in {directory}")
     framework_update_file = os.path.join(directory, f"{filename}.data")
     framework_update_meta_file = os.path.join(directory, f"{filename}.meta")
     update_file_valid = False
@@ -140,7 +144,7 @@ def has_update_package(directory, filename):
     if os.path.isfile(framework_update_file) and os.path.isfile(
         framework_update_meta_file
     ):
-        print(f"Found update file {framework_update_file}, validating...")
+        log(f"Found update file {framework_update_file}, validating...")
         try:
             with open(framework_update_meta_file, "r") as fup_mf:
                 metadata = json.load(fup_mf)
@@ -151,13 +155,13 @@ def has_update_package(directory, filename):
                     ):
                         update_file_valid = True
                     else:
-                        print("Update file hash mismatch")
+                        log("Update file hash mismatch")
                 else:
-                    print("Update file length mismatch")
+                    log("Update file length mismatch")
         except IOError:
-            print("Failed to read metadata")
+            log("Failed to read metadata")
         except (json.JSONDecodeError, KeyError):
-            print("Update metadata corrupted, skipping update")
+            log("Update metadata corrupted, skipping update")
 
         if not update_file_valid:
             os.unlink(framework_update_file)
@@ -217,16 +221,16 @@ def install_update_package(install_directory, filename, remove_source: bool = Tr
     tmp_dir = os.path.join(install_directory, "tmp")
 
     if os.path.isdir(tmp_dir):
-        print(yellow(f"Removing stuck tmp dir: {tmp_dir}"))
+        log(yellow(f"Removing stuck tmp dir: {tmp_dir}"))
         shutil.rmtree(tmp_dir)  # probably failed update?
 
     # try to extract package
     try:
         with tarfile.open(framework_update_file, "r:gz") as tar:
-            print(f"Extracting update package to: {tmp_dir}")
+            log(f"Extracting update package to: {tmp_dir}")
             tar.extractall(path=tmp_dir)
     except (ValueError, tarfile.TarError):
-        print("Failed to extract package")
+        log("Failed to extract package")
         if remove_source:
             os.unlink(framework_update_file)
             os.unlink(framework_update_meta_file)
@@ -237,7 +241,7 @@ def install_update_package(install_directory, filename, remove_source: bool = Tr
     version_to_install = read_version(os.path.join(tmp_dir, "manifest.json"))
 
     if version_to_install is None:
-        print("Failed to read package version")
+        log("Failed to read package version")
         shutil.rmtree(tmp_dir)
         if remove_source:
             os.unlink(framework_update_file)
@@ -249,7 +253,7 @@ def install_update_package(install_directory, filename, remove_source: bool = Tr
     target_dir = os.path.join(install_directory, package_folder_name)
 
     if os.path.isdir(target_dir):
-        print(yellow("Trying to install an installed version, skipping"))
+        log(yellow("Trying to install an installed version, skipping"))
         # we don't want to install this package, remove sources
         shutil.rmtree(tmp_dir)
         if remove_source:
@@ -257,11 +261,11 @@ def install_update_package(install_directory, filename, remove_source: bool = Tr
             os.unlink(framework_update_meta_file)
         return
 
-    print(f"Installing version: {version_to_install}")
-    print(f"Renaming {tmp_dir} to {target_dir}")
+    log(f"Installing version: {version_to_install}")
+    log(f"Renaming {tmp_dir} to {target_dir}")
     shutil.move(tmp_dir, target_dir)
 
-    print("Running setup")
+    log("Running setup")
     install_folder = os.path.join(target_dir, "install")
     lines = [
         'echo "Setting up venv"',
@@ -278,7 +282,7 @@ def install_update_package(install_directory, filename, remove_source: bool = Tr
     ]
     subprocess_cmd(lines)
 
-    print("Removing update package")
+    log("Removing update package")
     if remove_source:
         os.unlink(framework_update_file)
         os.unlink(framework_update_meta_file)
@@ -313,30 +317,30 @@ def select_newest_package(directory, skipped_versions, is_default: bool = False)
 
             if not is_valid_package(fw_dir):
                 if not is_default:
-                    print(red(f"Removing {fw_dir}: missing 'installed' marker file"))
+                    log(red(f"Removing {fw_dir}: missing 'installed' marker file"))
                     shutil.rmtree(fw_dir)
                 continue
 
             manifest_file = os.path.join(fw_dir, "manifest.json")
             if not os.path.isfile(manifest_file):
-                print(f"Manifest file not found: {manifest_file}")
+                log(f"Manifest file not found: {manifest_file}")
                 continue
 
             version = read_version(manifest_file)
             if version is None:
-                print(f"Failed to read version from {manifest_file}")
+                log(f"Failed to read version from {manifest_file}")
                 continue
 
-            print(f"Found version {version}")
+            log(f"Found version {version}")
 
             if newest < version:
                 newest = version
                 newest_path = fw_dir
             else:
-                print(f"Skipping {version} - older than {newest}")
+                log(f"Skipping {version} - older than {newest}")
     except FileNotFoundError:
-        print("Failed to select newest package")
-        print(traceback.format_exc())
+        log("Failed to select newest package")
+        log(traceback.format_exc())
 
     return newest_path
 
@@ -369,7 +373,7 @@ def run_pi_firmware(path: str):
     """
 
     while True:
-        print(green(f"Starting {path}"))
+        log(green(f"Starting {path}"))
         lines = [
             # activate venv
             f"sh {path}/install/venv/bin/activate",
@@ -381,11 +385,11 @@ def run_pi_firmware(path: str):
         except KeyboardInterrupt:
             return_value = FIRMWARE_RETURN_VALUE_OK
 
-        print(f"Script exited with {return_value}")
+        log(f"Script exited with {return_value}")
         if return_value == FIRMWARE_RETURN_VALUE_ERROR:
             # if script dies with error, restart
             # TODO: maybe measure runtime and if shorter than X then disable the package
-            print(yellow("Firmware exited with error, restarting"))
+            log(yellow("Firmware exited with error, restarting"))
             continue
 
         return return_value
@@ -405,7 +409,7 @@ def wait_for_board_powered():
     # read AMP_EN to detect if Revvy is ON
     amp_en = subprocess.check_output(["gpio", "read", AMP_EN_WIRINGPI_PIN])
     while amp_en != b"1\n":
-        print("Device is off... waiting")
+        log("Device is off... waiting")
         time.sleep(1)
         amp_en = subprocess.check_output(["gpio", "read", AMP_EN_WIRINGPI_PIN])
 
@@ -421,27 +425,27 @@ def start_newest_framework(skipped_versions: list[str]):
     # delay to wait hciuart device
     time.sleep(1)
 
-    print("Looking for firmware packages")
+    log("Looking for firmware packages")
     path = select_newest_package(INSTALLED_PACKAGES_DIR, skipped_versions)
     if not path:
         # if there is no such package, start the built in one
-        print("No user package found, trying default")
+        log("No user package found, trying default")
         path = select_newest_package(DEFAULT_PACKAGE_DIR, [], is_default=True)
 
     if not path:
         # if, for some reason there is no built-in package, stop
-        print("There are no more packages to try - exit")
+        log("There are no more packages to try - exit")
         return True
 
     return_value = run_pi_firmware(path)
     if return_value == FIRMWARE_RETURN_VALUE_OK:
-        print("Manual exit, exiting loader")
+        log("Manual exit, exiting loader")
         return True
 
     if return_value == FIRMWARE_RETURN_VALUE_INTEGRITY_ERROR:
         # if script dies with integrity error, mark the package as unstartable
         # and try the next one
-        print(
+        log(
             f"Integrity error or otherwise unstartable package - add {path} to skipped list"
         )
         skipped_versions.append(path)
@@ -456,7 +460,7 @@ def install_updates(install_directory):
 
 
 def run_tests() -> int:
-    print(green(f"Running tests"))
+    log(green(f"Running tests"))
 
     lines = [
         # activate venv
@@ -485,6 +489,8 @@ def main() -> int:
         directory: Base directory containing installed version of the revvy
             framework.
     """
+    global log
+
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--install-only",
@@ -516,13 +522,14 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.service:
+        log = lambda msg: ...  # ignore logs in service mode
         if args.early:
             if is_rpi_zero_2w():
-                print("Started early on Raspberry Pi Zero 2 W, exiting")
+                log("Started early on Raspberry Pi Zero 2 W, exiting")
                 return 0
         else:
             if not is_rpi_zero_2w():
-                print("Started on Raspberry Pi Zero a second time, exiting")
+                log("Started on Raspberry Pi Zero a second time, exiting")
                 return 0
 
     if args.install_only:
@@ -531,10 +538,10 @@ def main() -> int:
         else:
             install_directory = INSTALLED_PACKAGES_DIR
 
-        print(f"Install directory: {install_directory}")
-        print(f"Data directory: {DATA_DIRECTORY}")
+        log(f"Install directory: {install_directory}")
+        log(f"Data directory: {DATA_DIRECTORY}")
         install_updates(install_directory)
-        print("--install-only flag is set, will not start framework")
+        log("--install-only flag is set, will not start framework")
         return 0
 
     # Entering "normal" operation
@@ -551,7 +558,7 @@ def main() -> int:
         install_updates(INSTALLED_PACKAGES_DIR)
 
         if start_newest_framework(skipped_versions):
-            print("Exiting launcher")
+            log("Exiting launcher")
             return 0
 
 
