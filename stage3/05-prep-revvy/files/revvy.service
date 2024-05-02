@@ -1,6 +1,5 @@
 [Unit]
 Description=Revvy service, delayed start for the RPi Zero 2 W
-StartLimitIntervalSec=1
 After=bluetooth.service hciuart.service
 Wants=bluetooth.service hciuart.service
 
