@@ -522,15 +522,12 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.service:
-        log = lambda msg: ...  # ignore logs in service mode
-        if args.early:
-            if is_rpi_zero_2w():
-                log("Started early on Raspberry Pi Zero 2 W, exiting")
-                return 0
-        else:
-            if not is_rpi_zero_2w():
-                log("Started on Raspberry Pi Zero a second time, exiting")
-                return 0
+        # ignore logs when running as a service
+        log = lambda msg: ...
+        # We delay starting the service on the Zero 2 W to give hciuart some time to initialize
+        is_zero_2w = is_rpi_zero_2w()
+        if (args.early and is_zero_2w) or (not args.early and not is_zero_2w):
+            return 0
 
     if args.install_only:
         if args.install_default:

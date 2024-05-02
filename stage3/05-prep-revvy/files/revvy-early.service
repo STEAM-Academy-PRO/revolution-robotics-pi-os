@@ -9,4 +9,4 @@ User=pi
 ExecStart=/usr/bin/env python3 /home/pi/RevvyFramework/launch_revvy.py --service --early
 
 [Install]
-WantedBy=bluetooth.target
+WantedBy=basic.target
