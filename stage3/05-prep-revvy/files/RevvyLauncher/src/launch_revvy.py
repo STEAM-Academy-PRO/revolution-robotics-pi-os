@@ -498,7 +498,13 @@ def run_tests() -> int:
         return -1
 
 
-def main():
+def is_rpi_zero_2w() -> bool:
+    """Check if the device is a Raspberry Pi Zero 2 W"""
+    with open("/proc/cpuinfo") as f:
+        return "Raspberry Pi Zero 2 W" in f.read()
+
+
+def main() -> int:
     """Runs revvy from directory.
 
     Handles the command line arguments of the script.
@@ -529,8 +535,28 @@ def main():
         help="Run test scripts",
         action="store_true",
     )
+    parser.add_argument(
+        "--service",
+        help="The script has been started by a systemd service.",
+        action="store_true",
+    )
+    parser.add_argument(
+        "--early",
+        help="The service was started early during the boot process. If it is running on the Zero 2 W, exit.",
+        action="store_true",
+    )
 
     args = parser.parse_args()
+
+    if args.service:
+        if args.early:
+            if is_rpi_zero_2w():
+                print("Started early on Raspberry Pi Zero 2 W, exiting")
+                return 0
+        else:
+            if not is_rpi_zero_2w():
+                print("Started on Raspberry Pi Zero a second time, exiting")
+                return 0
 
     if args.test:
         if args.setup:

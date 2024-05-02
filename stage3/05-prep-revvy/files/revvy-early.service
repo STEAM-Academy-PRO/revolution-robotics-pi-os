@@ -1,0 +1,14 @@
+[Unit]
+Description=Revvy service, early start for the RPi Zero W
+StartLimitIntervalSec=1
+After=hciuart.service
+
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=1
+User=pi
+ExecStart=/usr/bin/env python3 /home/pi/RevvyFramework/launch_revvy.py --service --early
+
+[Install]
+WantedBy=bluetooth.target
