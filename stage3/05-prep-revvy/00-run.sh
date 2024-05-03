@@ -46,7 +46,7 @@ sudo systemctl mask systemd-journald
 sudo systemctl mask systemd-journal-flush
 sudo systemctl mask rc-local.service
 sudo systemctl mask systemd-pstore.service
-sudo systemctl mask getty@.service
+# sudo systemctl mask getty@.service
 sudo systemctl mask modprobe@fuse.service
 sudo systemctl mask modprobe@configfs.service
 

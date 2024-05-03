@@ -50,8 +50,8 @@ systemctl mask systemd-rfkill systemd-rfkill.socket  # enable/disable wireless d
 systemctl disable systemd-fsck-root
 
 echo "  ROize prelogin-qr"
-rm -rf /etc/issue
-ln -s /tmp/etc-issue /etc/issue
+rm -rf /etc/motd
+ln -s /tmp/etc-motd /etc/motd
 
 echo "  ROize bluetooth"
 # NOTE: hacky, /var/run/bluetooth would be nicer, but requires creating dir on every boot
