@@ -44,9 +44,14 @@ sudo systemctl mask nfs-config
 sudo systemctl mask systemd-bless-boot.service
 sudo systemctl mask systemd-journald
 sudo systemctl mask systemd-journal-flush
-sudo systemctl disable rpi-eeprom-update
 sudo systemctl mask rc-local.service
-sudo systemctl mask systemd-logind.service
+sudo systemctl mask systemd-pstore.service
+sudo systemctl mask getty@.service
+sudo systemctl mask modprobe@fuse.service
+sudo systemctl mask modprobe@configfs.service
+
+sudo systemctl disable rpi-eeprom-update
+sudo systemctl disable rpi-display-backlight.service
 
 EOF
 
