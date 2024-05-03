@@ -432,10 +432,10 @@ def start_newest_framework(skipped_versions: list[str]):
         log("No user package found, trying default")
         path = select_newest_package(DEFAULT_PACKAGE_DIR, [], is_default=True)
 
-    if not path:
-        # if, for some reason there is no built-in package, stop
-        log("There are no more packages to try - exit")
-        return True
+        if not path:
+            # if, for some reason there is no built-in package, stop
+            log("There are no more packages to try - exit")
+            return True
 
     return_value = run_pi_firmware(path)
     if return_value == FIRMWARE_RETURN_VALUE_OK:
