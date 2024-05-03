@@ -425,9 +425,6 @@ def start_newest_framework(skipped_versions: list[str]):
 
     wait_for_board_powered()
 
-    # delay to wait hciuart device
-    time.sleep(1)
-
     log("Looking for firmware packages")
     path = select_newest_package(INSTALLED_PACKAGES_DIR, skipped_versions)
     if not path:
