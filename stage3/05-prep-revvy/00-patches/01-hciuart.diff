@@ -1,0 +1,17 @@
+--- a/rootfs/lib/systemd/system/hciuart.service
++++ b/rootfs/lib/systemd/system/hciuart.service
+@@ -2,10 +2,12 @@
+ Description=Configure Bluetooth Modems connected by UART
+ ConditionFileNotEmpty=/proc/device-tree/soc/gpio@7e200000/bt_pins/brcm,pins
+ After=dev-serial1.device
++Requires=dev-serial1.device
++DefaultDependencies=no
+ 
+ [Service]
+ Type=forking
+ ExecStart=/usr/bin/btuart
+ 
+ [Install]
+-WantedBy=dev-serial1.device
++WantedBy=local-fs.target
+\ No newline at end of file
