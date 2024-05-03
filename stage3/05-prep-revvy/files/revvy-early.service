@@ -1,5 +1,6 @@
 [Unit]
 Description=Revvy service, early start for the RPi Zero W
+Before=ifupdown-pre.service dhcpcd.service avahi-daemon.service
 
 [Service]
 Type=simple

@@ -46,6 +46,7 @@ sudo systemctl mask systemd-journald
 sudo systemctl mask systemd-journal-flush
 sudo systemctl disable rpi-eeprom-update
 sudo systemctl mask rc-local.service
+sudo systemctl mask systemd-logind.service
 
 EOF
 
