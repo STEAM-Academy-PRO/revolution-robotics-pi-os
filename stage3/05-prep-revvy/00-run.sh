@@ -135,7 +135,6 @@ else
 fi
 
 
-
 echo " Deleting tempRF directory"
 cd ..
 rm -rf tempRF
@@ -143,6 +142,8 @@ rm -rf tempRF
 
 on_chroot << EOF
 echo "  Install requirements"
+pip3 install --upgrade pip
+
 pip3 install -r /home/pi/requirements.txt
 pip3 install -r /home/pi/requirements_dev.txt
 

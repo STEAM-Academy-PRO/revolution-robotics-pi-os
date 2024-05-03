@@ -459,21 +459,6 @@ def install_updates(install_directory):
         install_update_package(install_directory, "2")
 
 
-def run_tests() -> int:
-    log(green(f"Running tests"))
-
-    lines = [
-        # activate venv
-        f"sh install/venv/bin/activate",
-        # start script
-        f"python3 -m tests.hil_tests.tests",
-    ]
-    try:
-        return subprocess_cmd(lines)
-    except KeyboardInterrupt:
-        return -1
-
-
 def is_rpi_zero_2w() -> bool:
     """Check if the device is a Raspberry Pi Zero 2 W"""
     with open("/proc/cpuinfo") as f:

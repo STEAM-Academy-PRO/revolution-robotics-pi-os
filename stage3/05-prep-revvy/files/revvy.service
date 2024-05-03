@@ -1,14 +1,14 @@
 [Unit]
 Description=Revvy service, delayed start for the RPi Zero 2 W
-After=bluetooth.service hciuart.service
-Wants=bluetooth.service hciuart.service
+After=bluetooth.target hciuart.service
+Wants=bluetooth.target hciuart.service
 
 [Service]
 Type=simple
 Restart=on-failure
 RestartSec=1
 User=pi
-ExecStart=/usr/bin/env python3 /home/pi/RevvyFramework/launch_revvy.py --service
+ExecStart=/usr/bin/env python3 -B -u /home/pi/RevvyFramework/launch_revvy.py --service
 
 [Install]
-WantedBy=bluetooth.target
+WantedBy=multi-user.target
