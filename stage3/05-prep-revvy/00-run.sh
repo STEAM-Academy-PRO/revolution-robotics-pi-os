@@ -95,8 +95,8 @@ EOF
 mkdir tempRF
 cd tempRF
 
-if [ -z ${FIRMWARE_RELEASE} ]; then
-    echo " Downloading latest release "
+if [ ! -z ${FIRMWARE_RELEASE} ]; then
+    echo " Downloading latest release ('${FIRMWARE_RELEASE}') "
     gh release download ${FIRMWARE_RELEASE} -R STEAM-Academy-PRO/revolution-robotics-robot-mind -p "pi-firmware.*"
 
     echo "  Copying install files to ${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/"
@@ -106,10 +106,10 @@ if [ -z ${FIRMWARE_RELEASE} ]; then
 
     tar -xvf pi-firmware.data
     cp install/requirements.txt "${ROOTFS_DIR}/home/pi/requirements.txt"
-    cp install/requirements_dev.txt "${ROOTFS_DIR}/home/pi/requirements_dev.txt"
+    cp install/requirements_pi_dev.txt "${ROOTFS_DIR}/home/pi/requirements_pi_dev.txt"
 
-elif [ -z ${FIRMWARE_REV} ]; then
-    echo " Downloading latest firmware source "
+elif [ ! -z ${FIRMWARE_REV} ]; then
+    echo " Downloading latest firmware source ('${FIRMWARE_REV}') "
     echo " WARNING: currently this package will not include the mcu-firmware!! "
 
     git clone git@github.com:STEAM-Academy-PRO/revolution-robotics-robot-mind.git
@@ -124,7 +124,7 @@ elif [ -z ${FIRMWARE_REV} ]; then
     cp install/pi-firmware.meta "${ROOTFS_DIR}/home/pi/RevvyFramework/user/ble/2.meta"
 
     cp install/requirements.txt "${ROOTFS_DIR}/home/pi/requirements.txt"
-    cp install/requirements_dev.txt "${ROOTFS_DIR}/home/pi/requirements_dev.txt"
+    cp install/requirements_pi_dev.txt "${ROOTFS_DIR}/home/pi/requirements_pi_dev.txt"
 
     echo "  Deleting pi-firmware sources "
     rm -rf revolution-robotics-robot-mind
@@ -142,13 +142,11 @@ rm -rf tempRF
 
 on_chroot << EOF
 echo "  Install requirements"
-pip3 install --upgrade pip
-
 pip3 install -r /home/pi/requirements.txt
-pip3 install -r /home/pi/requirements_dev.txt
+pip3 install -r /home/pi/requirements_pi_dev.txt
 
 rm /home/pi/requirements.txt
-rm /home/pi/requirements_dev.txt
+rm /home/pi/requirements_pi_dev.txt
 
 echo "  Install the included package to the read-only part"
 python3 /home/pi/RevvyFramework/launch_revvy.py --install-only --install-default
