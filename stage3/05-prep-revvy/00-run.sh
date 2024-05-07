@@ -3,12 +3,6 @@
 echo " Start installing things that are unique to revvy "
 
 on_chroot << EOF
-echo "  Enable raw sockets for python for BT "
-#setcap 'cap_net_raw,cap_net_admin+eip' /usr/bin/python3.9
-
-echo "  Enable i2c module "
-echo "i2c-dev" >> /etc/modules
-
 # remove unnecessary systemd generators
 sudo unlink /lib/systemd/user-generators/systemd-xdg-autostart-generator
 
