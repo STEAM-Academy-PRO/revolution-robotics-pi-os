@@ -51,6 +51,7 @@ sudo systemctl mask systemd-pstore.service
 sudo systemctl mask modprobe@fuse.service
 sudo systemctl mask modprobe@configfs.service
 sudo systemctl mask modprobe@drm.service
+sudo systemctl mask systemd-sysctl.service
 
 sudo systemctl disable rpi-eeprom-update
 sudo systemctl disable rpi-display-backlight.service
