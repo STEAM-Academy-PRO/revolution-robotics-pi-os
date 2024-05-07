@@ -50,6 +50,42 @@ sudo systemctl mask systemd-sysctl.service
 sudo systemctl disable rpi-eeprom-update
 sudo systemctl disable rpi-display-backlight.service
 
+sudo rm -rf /etc/systemd/system/apply_noobs_os_config.service
+sudo rm -rf /etc/systemd/system/apt-daily*
+sudo rm -rf /etc/systemd/system/remote-fs.target.wants/
+sudo rm -rf /etc/systemd/system/rescue.service
+sudo rm -rf /etc/systemd/system/rc-local*
+sudo rm -rf /etc/systemd/system/plymouth-start.service
+sudo rm -rf /etc/systemd/system/nfs-*
+
+sudo rm -rf /lib/systemd/system/smartcard.target
+sudo rm -rf /lib/systemd/system/nfs*
+sudo rm -rf /lib/systemd/system/emergency*
+sudo rm -rf /lib/systemd/system/x11-common.service
+sudo rm -rf /lib/systemd/system/systemd-hibernate*
+sudo rm -rf /lib/systemd/system/regenerate_ssh_host_keys.service
+sudo rm -rf /lib/systemd/system/apt-daily*
+sudo rm -rf /lib/systemd/system/keyboard-setup.service
+sudo rm -rf /lib/systemd/system/quotaon.service
+sudo rm -rf /lib/systemd/system/rescue*
+sudo rm -rf /lib/systemd/system/remote-fs*
+sudo rm -rf /lib/systemd/system/system-update*
+sudo rm -rf /lib/systemd/system/swap.target
+sudo rm -rf /lib/systemd/system/systemd-initctl.*
+sudo rm -rf /lib/systemd/system/halt.target
+sudo rm -rf /lib/systemd/system/hybernate.target
+sudo rm -rf /lib/systemd/system/hybrid-sleep.target
+sudo rm -rf /lib/systemd/system/ctrl-alt-del.target
+sudo rm -rf /lib/systemd/system/rc.service
+sudo rm -rf /lib/systemd/system/rcS.service
+sudo rm -rf /lib/systemd/system/sudo.service
+sudo rm -rf /lib/systemd/system/rpi-display-backlight.service
+sudo rm -rf /lib/systemd/system/rc-local*
+sudo rm -rf /lib/systemd/system/rpc-svcgssd.service
+sudo rm -rf /lib/systemd/system/initrd-root-device.target.wants
+sudo rm -rf /lib/systemd/system/remote-cryptsetup.target
+
+
 EOF
 
 # Wiringpi
