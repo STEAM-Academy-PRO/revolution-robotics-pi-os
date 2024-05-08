@@ -38,7 +38,7 @@ sudo systemctl mask nfs-config
 # sudo rm /lib/systemd/system/modprobe@drm.service
 
 sudo systemctl mask systemd-bless-boot.service
-sudo systemctl mask systemd-journald
+# sudo systemctl mask systemd-journald
 sudo systemctl mask systemd-journal-flush
 sudo systemctl mask rc-local.service
 sudo systemctl mask systemd-pstore.service
@@ -59,6 +59,7 @@ sudo rm -rf /etc/systemd/system/plymouth-start.service
 sudo rm -rf /etc/systemd/system/nfs-*
 
 sudo rm -rf /lib/systemd/system/smartcard.target
+sudo rm -rf /lib/systemd/system/bthelper@.service
 sudo rm -rf /lib/systemd/system/nfs*
 sudo rm -rf /lib/systemd/system/emergency*
 sudo rm -rf /lib/systemd/system/x11-common.service
