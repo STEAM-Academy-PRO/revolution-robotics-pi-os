@@ -108,7 +108,6 @@ rm -rf WiringPi
 # Revvy service and launcher
 
 echo "  Deploy python service "
-install -m 644 files/revvy-early.service  "${ROOTFS_DIR}/etc/systemd/system/revvy-early.service"
 install -m 644 files/revvy.service        "${ROOTFS_DIR}/etc/systemd/system/revvy.service"
 
 echo "  Copying launcher to ${ROOTFS_DIR}/home/pi/RevvyFramework"
@@ -188,5 +187,4 @@ chmod 775 -R "/home/pi/RevvyFramework/user"
 
 echo "  Enable Revvy service(s) "
 systemctl enable revvy
-systemctl enable revvy-early
 EOF
