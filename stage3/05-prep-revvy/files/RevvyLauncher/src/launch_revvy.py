@@ -459,12 +459,6 @@ def install_updates(install_directory):
         install_update_package(install_directory, "2")
 
 
-def is_rpi_zero_2w() -> bool:
-    """Check if the device is a Raspberry Pi Zero 2 W"""
-    with open("/proc/cpuinfo") as f:
-        return "Raspberry Pi Zero 2 W" in f.read()
-
-
 def main() -> int:
     """Runs revvy from directory.
 

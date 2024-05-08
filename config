@@ -1,5 +1,5 @@
 IMG_NAME=revvy
-ENABLE_SSH=1
+ENABLE_SSH=1 # TODO do not enable SSH on production robots by default
 export FIRST_USER_PASS=${FIRST_USER_PASS:-123}
 
 # set FIRMWARE_RELEASE for releases
