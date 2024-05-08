@@ -38,7 +38,7 @@ sudo systemctl mask nfs-config
 # sudo rm /lib/systemd/system/modprobe@drm.service
 
 sudo systemctl mask systemd-bless-boot.service
-# sudo systemctl mask systemd-journald
+sudo systemctl mask systemd-journald
 sudo systemctl mask systemd-journal-flush
 sudo systemctl mask rc-local.service
 sudo systemctl mask systemd-pstore.service
