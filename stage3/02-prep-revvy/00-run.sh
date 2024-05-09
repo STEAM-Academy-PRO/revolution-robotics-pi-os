@@ -189,3 +189,5 @@ chmod 775 -R "/home/pi/RevvyFramework/user"
 echo "  Enable Revvy service(s) "
 systemctl enable revvy
 EOF
+
+setcap 'cap_net_raw+eip' "${ROOTFS_DIR}/usr/bin/python3.9"

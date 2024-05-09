@@ -40,6 +40,4 @@ ln -s /boot/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf
 /usr/bin/ssh-keygen -A -v
 systemctl disable regenerate_ssh_host_keys
 
-setcap 'cap_net_raw+eip' "${ROOTFS_DIR}/usr/bin/python3.9"
-
 EOF
