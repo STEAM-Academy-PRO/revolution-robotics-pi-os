@@ -1,3 +1,3 @@
 #!/usr/bin/sh
 
-cat /etc/motd
+cat /etc/issue

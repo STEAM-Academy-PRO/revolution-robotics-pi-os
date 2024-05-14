@@ -29,8 +29,8 @@ systemctl mask systemd-rfkill systemd-rfkill.socket  # enable/disable wireless d
 systemctl disable systemd-fsck-root
 
 echo "  ROize prelogin-qr"
-rm -rf /etc/motd
-ln -s /tmp/etc-motd /etc/motd
+rm -rf /etc/issue
+ln -s /tmp/etc-issue /etc/issue
 
 echo "  ROize wpa_supplicant.conf"
 mv /etc/wpa_supplicant/wpa_supplicant.conf /boot/wpa_supplicant.conf
