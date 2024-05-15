@@ -11,81 +11,80 @@ sudo unlink /lib/systemd/system-generators/systemd-hibernate-resume-generator
 sudo unlink /lib/systemd/system-generators/systemd-system-update-generator
 sudo unlink /lib/systemd/system-generators/systemd-cryptsetup-generator
 sudo unlink /lib/systemd/system-generators/systemd-gpt-auto-generator
-sudo unlink /lib/systemd/system-generators/systemd-bless-boot-generator
-sudo unlink /lib/systemd/system-generators/systemd-run-generator
-sudo unlink /lib/systemd/system-generators/systemd-sysv-generator
-sudo unlink /lib/systemd/system-generators/systemd-veritysetup-generator
-sudo unlink /lib/systemd/system-generators/systemd-rc-local-generator
+# sudo unlink /lib/systemd/system-generators/systemd-bless-boot-generator
+# sudo unlink /lib/systemd/system-generators/systemd-run-generator
+# sudo unlink /lib/systemd/system-generators/systemd-sysv-generator
+# sudo unlink /lib/systemd/system-generators/systemd-veritysetup-generator
+# sudo unlink /lib/systemd/system-generators/systemd-rc-local-generator
 
 # disable services that are not needed
-sudo systemctl disable systemd-update-utmp.service
-sudo systemctl mask systemd-update-utmp.service
-sudo systemctl disable apt-daily.service
-sudo systemctl mask apt-daily.service
-sudo systemctl disable apt-daily.timer
-sudo systemctl disable apt-daily-upgrade.service
-sudo systemctl mask apt-daily-upgrade.service
-sudo systemctl disable apt-daily-upgrade.timer
-sudo systemctl disable systemd-timesyncd.service
-sudo systemctl disable wpa_supplicant.service
-sudo systemctl disable keyboard-setup.service
-sudo systemctl disable graphical.target
-sudo systemctl disable sshswitch
+# sudo systemctl disable systemd-update-utmp.service
+# sudo systemctl mask systemd-update-utmp.service
+# sudo systemctl disable apt-daily.service
+# sudo systemctl mask apt-daily.service
+# sudo systemctl disable apt-daily.timer
+# sudo systemctl disable apt-daily-upgrade.service
+# sudo systemctl mask apt-daily-upgrade.service
+# sudo systemctl disable apt-daily-upgrade.timer
+# sudo systemctl disable systemd-timesyncd.service
+# sudo systemctl disable wpa_supplicant.service
+# sudo systemctl disable keyboard-setup.service
+# sudo systemctl disable graphical.target
+# sudo systemctl disable sshswitch
 
-sudo systemctl mask nfs-client
-sudo systemctl mask nfs-config
+# sudo systemctl mask nfs-client
+# sudo systemctl mask nfs-config
 
-# sudo rm /lib/systemd/system/modprobe@drm.service
+# # sudo rm /lib/systemd/system/modprobe@drm.service
 
-sudo systemctl mask systemd-bless-boot.service
-sudo systemctl mask systemd-journald
-sudo systemctl mask systemd-journal-flush
-sudo systemctl mask rc-local.service
-sudo systemctl mask systemd-pstore.service
-sudo systemctl mask modprobe@fuse.service
-sudo systemctl mask modprobe@configfs.service
-sudo systemctl mask modprobe@drm.service
-sudo systemctl mask systemd-sysctl.service
+# sudo systemctl mask systemd-bless-boot.service
+# sudo systemctl mask systemd-journald
+# sudo systemctl mask systemd-journal-flush
+# sudo systemctl mask rc-local.service
+# sudo systemctl mask systemd-pstore.service
+# sudo systemctl mask modprobe@fuse.service
+# sudo systemctl mask modprobe@configfs.service
+# sudo systemctl mask modprobe@drm.service
+# sudo systemctl mask systemd-sysctl.service
 
-sudo systemctl disable rpi-eeprom-update
-sudo systemctl disable rpi-display-backlight.service
+# sudo systemctl disable rpi-eeprom-update
+# sudo systemctl disable rpi-display-backlight.service
 
-sudo rm -rf /etc/systemd/system/apply_noobs_os_config.service
-sudo rm -rf /etc/systemd/system/apt-daily*
-sudo rm -rf /etc/systemd/system/remote-fs.target.wants/
-sudo rm -rf /etc/systemd/system/rescue.service
-sudo rm -rf /etc/systemd/system/rc-local*
-sudo rm -rf /etc/systemd/system/plymouth-start.service
-sudo rm -rf /etc/systemd/system/nfs-*
+# sudo rm -rf /etc/systemd/system/apply_noobs_os_config.service
+# sudo rm -rf /etc/systemd/system/apt-daily*
+# sudo rm -rf /etc/systemd/system/remote-fs.target.wants/
+# sudo rm -rf /etc/systemd/system/rescue.service
+# sudo rm -rf /etc/systemd/system/rc-local*
+# sudo rm -rf /etc/systemd/system/plymouth-start.service
+# sudo rm -rf /etc/systemd/system/nfs-*
 
-sudo rm -rf /lib/systemd/system/smartcard.target
-sudo rm -rf /lib/systemd/system/bthelper@.service
-sudo rm -rf /lib/systemd/system/nfs*
-sudo rm -rf /lib/systemd/system/emergency*
-sudo rm -rf /lib/systemd/system/x11-common.service
-sudo rm -rf /lib/systemd/system/systemd-hibernate*
-sudo rm -rf /lib/systemd/system/regenerate_ssh_host_keys.service
-sudo rm -rf /lib/systemd/system/apt-daily*
-sudo rm -rf /lib/systemd/system/keyboard-setup.service
-sudo rm -rf /lib/systemd/system/quotaon.service
-sudo rm -rf /lib/systemd/system/rescue*
-sudo rm -rf /lib/systemd/system/remote-fs*
-sudo rm -rf /lib/systemd/system/system-update*
-sudo rm -rf /lib/systemd/system/swap.target
-sudo rm -rf /lib/systemd/system/systemd-initctl.*
-sudo rm -rf /lib/systemd/system/halt.target
-sudo rm -rf /lib/systemd/system/hybernate.target
-sudo rm -rf /lib/systemd/system/hybrid-sleep.target
-sudo rm -rf /lib/systemd/system/ctrl-alt-del.target
-sudo rm -rf /lib/systemd/system/rc.service
-sudo rm -rf /lib/systemd/system/rcS.service
-sudo rm -rf /lib/systemd/system/sudo.service
-sudo rm -rf /lib/systemd/system/rpi-display-backlight.service
-sudo rm -rf /lib/systemd/system/rc-local*
-sudo rm -rf /lib/systemd/system/rpc-svcgssd.service
-sudo rm -rf /lib/systemd/system/initrd-root-device.target.wants
-sudo rm -rf /lib/systemd/system/remote-cryptsetup.target
-
+# sudo rm -rf /lib/systemd/system/smartcard.target
+# sudo rm -rf /lib/systemd/system/bthelper@.service
+# sudo rm -rf /lib/systemd/system/nfs*
+# sudo rm -rf /lib/systemd/system/emergency*
+# sudo rm -rf /lib/systemd/system/x11-common.service
+# sudo rm -rf /lib/systemd/system/systemd-hibernate*
+# sudo rm -rf /lib/systemd/system/regenerate_ssh_host_keys.service
+# sudo rm -rf /lib/systemd/system/apt-daily*
+# sudo rm -rf /lib/systemd/system/keyboard-setup.service
+# sudo rm -rf /lib/systemd/system/quotaon.service
+# sudo rm -rf /lib/systemd/system/rescue*
+# sudo rm -rf /lib/systemd/system/remote-fs*
+# sudo rm -rf /lib/systemd/system/system-update*
+# sudo rm -rf /lib/systemd/system/swap.target
+# sudo rm -rf /lib/systemd/system/systemd-initctl.*
+# sudo rm -rf /lib/systemd/system/halt.target
+# sudo rm -rf /lib/systemd/system/hybernate.target
+# sudo rm -rf /lib/systemd/system/hybrid-sleep.target
+# sudo rm -rf /lib/systemd/system/ctrl-alt-del.target
+# sudo rm -rf /lib/systemd/system/rc.service
+# sudo rm -rf /lib/systemd/system/rcS.service
+# sudo rm -rf /lib/systemd/system/sudo.service
+# sudo rm -rf /lib/systemd/system/rpi-display-backlight.service
+# sudo rm -rf /lib/systemd/system/rc-local*
+# sudo rm -rf /lib/systemd/system/rpc-svcgssd.service
+# sudo rm -rf /lib/systemd/system/initrd-root-device.target.wants
+# sudo rm -rf /lib/systemd/system/remote-cryptsetup.target
 
 EOF
 
