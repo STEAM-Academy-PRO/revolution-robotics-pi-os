@@ -1,6 +1,6 @@
 # Pi OS builder
 
-Based on `pi-gen` rev `d53c4e58fb34d84f8be67a94912f09b8c635b157`
+Based on `pi-gen` rev `4da039215b162cf4a6a670340728377f5ddb5a18`
 
 ## Config
 
@@ -147,7 +147,7 @@ The following environment variables are supported:
 
  * `WPA_ESSID`, `WPA_PASSWORD` and `WPA_COUNTRY` (Default: unset)
 
-   If these are set, they are use to configure `wpa_supplicant.conf`, so that the Raspberry Pi can automatically connect to a wireless network on first boot. If `WPA_ESSID` is set and `WPA_PASSWORD` is unset an unprotected wireless network will be configured. If set, `WPA_PASSWORD` must be between 8 and 63 characters.
+   If these are set, they are use to configure `wpa_supplicant.conf`, so that the Raspberry Pi can automatically connect to a wireless network on first boot. If `WPA_ESSID` is set and `WPA_PASSWORD` is unset an unprotected wireless network will be configured. If set, `WPA_PASSWORD` must be between 8 and 63 characters. `WPA_COUNTRY` is a 2-letter ISO/IEC 3166 country Code, i.e. `GB`
 
  * `ENABLE_SSH` (Default: `0`)
 
