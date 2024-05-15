@@ -1,6 +1,6 @@
 # Pi OS builder
 
-Based on `pi-gen` rev `47e34efb89fb76178d0b7f8690d1b24a222c077b`
+Based on `pi-gen` rev `549681f6e217d6e713afb943d571afda83542a2f`
 
 ## Config
 
@@ -42,8 +42,11 @@ The following environment variables are supported:
 
 * `RELEASE` (Default: bullseye)
 
-   The release version to build images against. Valid values are jessie, stretch,
-   buster, bullseye, and testing.
+   The release version to build images against. Valid values are any supported
+   Debian release. However, since different releases will have different sets of
+   packages available, you'll need to either modify your stages accordingly, or
+   checkout the appropriate branch. For example, if you'd like to build a
+   `buster` image, you should do so from the `buster` branch.
 
  * `APT_PROXY` (Default: unset)
 
