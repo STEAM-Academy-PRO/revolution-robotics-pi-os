@@ -1,6 +1,6 @@
 # Pi OS builder
 
-Based on `pi-gen` rev `663401de3cbbcf54d393195cb2aa7d06e5127ffd`
+Based on `pi-gen` rev `d9668973950853ce3dc026246cad24fcbb5dbcfa`
 
 ## Config
 
@@ -17,7 +17,7 @@ The following environment variables are supported:
    but you should use something else for a customized version.  Export files
    in stages may add suffixes to `IMG_NAME`.
 
-* `USE_QCOW2` **EXPERIMENTAL** (Default: `0` )
+ * `USE_QCOW2` **EXPERIMENTAL** (Default: `0` )
 
     Instead of using traditional way of building the rootfs of every stage in
     single subdirectories and copying over the previous one to the next one,
@@ -40,7 +40,7 @@ The following environment variables are supported:
     that the network block device is not disconnected correctly after the Docker process has
     ended abnormally. In that case see [Disconnect an image if something went wrong](#Disconnect-an-image-if-something-went-wrong)
 
-* `RELEASE` (Default: bookworm)
+ * `RELEASE` (Default: bookworm)
 
    The release version to build images against. Valid values are any supported
    Debian release. However, since different releases will have different sets of

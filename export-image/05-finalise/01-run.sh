@@ -55,8 +55,8 @@ find "${ROOTFS_DIR}/var/log/" -type f -exec cp /dev/null {} \;
 rm -f "${ROOTFS_DIR}/root/.vnc/private.key"
 rm -f "${ROOTFS_DIR}/etc/vnc/updateid"
 
-update_issue "$(basename "${EXPORT_DIR}")"
-install -m 644 "${ROOTFS_DIR}/etc/rpi-issue" "${ROOTFS_DIR}/boot/firmware/issue.txt"
+# update_issue "$(basename "${EXPORT_DIR}")"
+# install -m 644 "${ROOTFS_DIR}/etc/rpi-issue" "${ROOTFS_DIR}/boot/firmware/issue.txt"
 
 cp "$ROOTFS_DIR/etc/rpi-issue" "$INFO_FILE"
 
