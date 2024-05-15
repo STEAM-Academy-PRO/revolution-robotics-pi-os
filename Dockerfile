@@ -7,9 +7,8 @@ RUN apt-get -y update && \
     apt-get -y install --no-install-recommends \
         git vim parted \
         quilt coreutils qemu-user-static debootstrap zerofree zip dosfstools \
-        libarchive-tools libcap2-bin rsync grep udev xz-utils curl xxd file kmod bc\
-        binfmt-support ca-certificates fdisk gpg pigz\
-        python3 python3-pip python3-venv python3-dev\
+        libarchive-tools libcap2-bin rsync grep udev xz-utils curl xxd file kmod bc \
+        binfmt-support ca-certificates fdisk gpg pigz arch-test \
     && rm -rf /var/lib/apt/lists/*
 
 COPY . /pi-gen/
