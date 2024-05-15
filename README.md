@@ -1,6 +1,6 @@
 # Pi OS builder
 
-Based on `pi-gen` rev `4de913c1fff28adde5681a5258978f6bfaa880b6`
+Based on `pi-gen` rev `d53c4e58fb34d84f8be67a94912f09b8c635b157`
 
 ## Config
 
