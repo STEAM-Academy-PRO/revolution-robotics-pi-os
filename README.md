@@ -1,6 +1,6 @@
 # Pi OS builder
 
-Based on `pi-gen` rev `f1c166a2833950a7c44fe19b01780723635a7aa3`
+Based on `pi-gen` rev `e95e00f879e24c0f087763ec471fb9bdf9a8f92b`
 
 ## Config
 
@@ -10,7 +10,7 @@ environment variables.
 
 The following environment variables are supported:
 
- * `IMG_NAME` **required** (Default: unset)
+ * `IMG_NAME` (Default: raspios-$RELEASE-$ARCH, for example: "raspios-bookworm-armhf")
 
    The name of the image to build with the current stage directories. Use this
    variable to set the root name of your OS, eg `IMG_NAME=Frobulator`.
