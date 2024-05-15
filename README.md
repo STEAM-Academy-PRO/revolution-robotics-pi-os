@@ -1,6 +1,6 @@
 # Pi OS builder
 
-Based on `pi-gen` rev `549681f6e217d6e713afb943d571afda83542a2f`
+Based on `pi-gen` rev `c3083ecd503629eac5184ec692f65bbbd28ac317`
 
 ## Config
 
@@ -167,6 +167,13 @@ The following environment variables are supported:
    * Setting to `1` will disable password authentication for SSH and enable
    public key authentication.  Note that if SSH is not enabled this will take
    effect when SSH becomes enabled.
+
+ * `SETFCAP` (Default: unset)
+
+   * Setting to `1` will prevent pi-gen from dropping the "capabilities"
+   feature. Generating the root filesystem with capabilities enabled and running
+   it from a filesystem that does not support capabilities (like NFS) can cause
+   issues. Only enable this if you understand what it is.
 
  * `STAGE_LIST` (Default: `stage*`)
 
