@@ -1,6 +1,6 @@
 # Pi OS builder
 
-Based on `pi-gen` rev `c20ce09facaaadcc480a7bbda4fe100fcacdee12`
+Based on `pi-gen` rev `502e5fa0e3e1342ac7eedaea964b40ec55d7adb4`
 
 ## Config
 
@@ -12,33 +12,9 @@ The following environment variables are supported:
 
  * `IMG_NAME` **required** (Default: unset)
 
-   The name of the image to build with the current stage directories.  Setting
-   `IMG_NAME=Raspbian` is logical for an unmodified RPi-Distro/pi-gen build,
-   but you should use something else for a customized version.  Export files
-   in stages may add suffixes to `IMG_NAME`.
-
- * `USE_QCOW2` **EXPERIMENTAL** (Default: `0` )
-
-    Instead of using traditional way of building the rootfs of every stage in
-    single subdirectories and copying over the previous one to the next one,
-    qcow2 based virtual disks with backing images are used in every stage.
-    This speeds up the build process and reduces overall space consumption
-    significantly.
-
-    <u>Additional optional parameters regarding qcow2 build:</u>
-
-    * `BASE_QCOW2_SIZE` (Default: 12G)
-
-        Size of the virtual qcow2 disk.
-        Note: it will not actually use that much of space at once but defines the
-        maximum size of the virtual disk. If you change the build process by adding
-        a lot of bigger packages or additional build stages, it can be necessary to
-        increase the value because the virtual disk can run out of space like a normal
-        hard drive would.
-
-    **CAUTION:**  Although the qcow2 build mechanism will run fine inside Docker, it can happen
-    that the network block device is not disconnected correctly after the Docker process has
-    ended abnormally. In that case see [Disconnect an image if something went wrong](#Disconnect-an-image-if-something-went-wrong)
+   The name of the image to build with the current stage directories. Use this
+   variable to set the root name of your OS, eg `IMG_NAME=Frobulator`.
+   Export files in stages may add suffixes to `IMG_NAME`.
 
  * `RELEASE` (Default: bookworm)
 
@@ -46,7 +22,7 @@ The following environment variables are supported:
    Debian release. However, since different releases will have different sets of
    packages available, you'll need to either modify your stages accordingly, or
    checkout the appropriate branch. For example, if you'd like to build a
-   `buster` image, you should do so from the `buster` branch.
+   `bullseye` image, you should do so from the `bullseye` branch.
 
  * `APT_PROXY` (Default: unset)
 
