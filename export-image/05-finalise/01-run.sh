@@ -60,9 +60,9 @@ rm -f "${ROOTFS_DIR}/etc/vnc/updateid"
 #if ! [ -L "${ROOTFS_DIR}/boot/issue.txt" ]; then
 #	ln -s firmware/issue.txt "${ROOTFS_DIR}/boot/issue.txt"
 #fi
-
-
-cp "$ROOTFS_DIR/etc/rpi-issue" "$INFO_FILE"
+#
+#
+# cp "$ROOTFS_DIR/etc/rpi-issue" "$INFO_FILE"
 
 
 {

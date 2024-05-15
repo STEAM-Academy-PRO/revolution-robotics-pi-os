@@ -54,10 +54,6 @@ BOOT_DEV="${LOOP_DEV}p1"
 ROOT_DEV="${LOOP_DEV}p2"
 DATA_DEV="${LOOP_DEV}p3"
 
-echo "/boot: offset $BOOT_OFFSET, length $BOOT_LENGTH"
-echo "/:     offset $ROOT_OFFSET, length $ROOT_LENGTH"
-echo "/home/pi/RevvyFramework/user:     offset $DATA_OFFSET, length $DATA_LENGTH"
-
 ROOT_FEATURES="^huge_file"
 for FEATURE in 64bit; do
 if grep -q "$FEATURE" /etc/mke2fs.conf; then
@@ -83,5 +79,5 @@ mkdir -p "${ROOTFS_DIR}/home/pi/RevvyFramework/user"
 mount -v "$DATA_DEV" "${ROOTFS_DIR}/home/pi/RevvyFramework/user" -t ext4
 
 rsync -aHAXx --exclude /var/cache/apt/archives --exclude /boot/firmware --exclude home/pi/RevvyFramework/user "${EXPORT_ROOTFS_DIR}/" "${ROOTFS_DIR}/"
-rsync -rtx "${EXPORT_ROOTFS_DIR}/boot/firmware" "${ROOTFS_DIR}/boot/firmware"
+rsync -rtx "${EXPORT_ROOTFS_DIR}/boot/firmware/" "${ROOTFS_DIR}/boot/firmware/"
 rsync -aHAXx "${EXPORT_ROOTFS_DIR}/home/pi/RevvyFramework/user/" "${ROOTFS_DIR}/home/pi/RevvyFramework/user/"

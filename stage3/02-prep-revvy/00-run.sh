@@ -172,8 +172,8 @@ rm -rf tempRF
 
 on_chroot << EOF
 echo "  Install requirements"
-pip3 install -r /home/pi/requirements.txt
-pip3 install -r /home/pi/requirements_pi_dev.txt
+pip3 install --break-system-packages -r /home/pi/requirements.txt
+pip3 install --break-system-packages -r /home/pi/requirements_pi_dev.txt
 
 rm /home/pi/requirements.txt
 rm /home/pi/requirements_pi_dev.txt
@@ -192,4 +192,4 @@ echo "  Remove temporarily installed git"
 sudo apt remove -y git
 EOF
 
-setcap 'cap_net_raw+eip' "${ROOTFS_DIR}/usr/bin/python3.9"
+setcap 'cap_net_raw+eip' "${ROOTFS_DIR}/usr/bin/python3.11"
