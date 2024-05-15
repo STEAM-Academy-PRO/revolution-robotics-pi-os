@@ -10,7 +10,7 @@ if [ "${NO_PRERUN_QCOW2}" = "0" ]; then
 	rm -rf "${ROOTFS_DIR}"
 	mkdir -p "${ROOTFS_DIR}"
 
-	BOOT_SIZE="$((256 * 1024 * 1024))"
+	BOOT_SIZE="$((512 * 1024 * 1024))"
 	ROOT_SIZE=$(du --apparent-size -s "${EXPORT_ROOTFS_DIR}" --exclude var/cache/apt/archives --exclude boot --exclude home/pi/RevvyFramework/user --block-size=1 | cut -f 1)
 	DATA_SIZE="$((1024 * 1024 * 1024 * 2))"
 
@@ -72,16 +72,12 @@ if [ "${NO_PRERUN_QCOW2}" = "0" ]; then
 	mkfs.ext4 -L data -O "$DATA_FEATURES" "$DATA_DEV" > /dev/null
 
 	mount -v "$ROOT_DEV" "${ROOTFS_DIR}" -t ext4
-	mkdir -p "${ROOTFS_DIR}/boot"
-	mount -v "$BOOT_DEV" "${ROOTFS_DIR}/boot" -t vfat
+	mkdir -p "${ROOTFS_DIR}/boot/firmware"
+	mount -v "$BOOT_DEV" "${ROOTFS_DIR}/boot/firmware" -t vfat
 	mkdir -p "${ROOTFS_DIR}/home/pi/RevvyFramework/user"
 	mount -v "$DATA_DEV" "${ROOTFS_DIR}/home/pi/RevvyFramework/user" -t ext4
 
-	echo "rsync 1"
-	rsync -aHAXx --exclude /var/cache/apt/archives --exclude /boot --exclude home/pi/RevvyFramework/user "${EXPORT_ROOTFS_DIR}/" "${ROOTFS_DIR}/"
-	echo "rsync 2"
-	rsync -rtx "${EXPORT_ROOTFS_DIR}/boot/" "${ROOTFS_DIR}/boot/"
-	echo "rsync 3    $EXPORT_ROOTFS_DIR      $ROOTFS_DIR"
+	rsync -aHAXx --exclude /var/cache/apt/archives --exclude /boot/firmware --exclude home/pi/RevvyFramework/user "${EXPORT_ROOTFS_DIR}/" "${ROOTFS_DIR}/"
+	rsync -rtx "${EXPORT_ROOTFS_DIR}/boot/firmware" "${ROOTFS_DIR}/boot/firmware"
 	rsync -aHAXx "${EXPORT_ROOTFS_DIR}/home/pi/RevvyFramework/user/" "${ROOTFS_DIR}/home/pi/RevvyFramework/user/"
-	echo "rsync 4"
 fi
