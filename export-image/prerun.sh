@@ -66,7 +66,13 @@ fi
 done
 DATA_FEATURES="$ROOT_FEATURES"
 
-mkdosfs -n bootfs -F 32 -s 4 -v "$BOOT_DEV" > /dev/null
+if [ "$BOOT_SIZE" -lt 134742016 ]; then
+	FAT_SIZE=16
+else
+	FAT_SIZE=32
+fi
+
+mkdosfs -n bootfs -F "$FAT_SIZE" -s 4 -v "$BOOT_DEV" > /dev/null
 mkfs.ext4 -L rootfs -O "$ROOT_FEATURES" "$ROOT_DEV" > /dev/null
 mkfs.ext4 -L data -O "$DATA_FEATURES" "$DATA_DEV" > /dev/null
 
