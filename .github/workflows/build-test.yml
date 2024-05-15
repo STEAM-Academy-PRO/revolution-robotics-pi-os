@@ -30,7 +30,7 @@ jobs:
       - name: build
         run: |
             sudo apt-get update
-            sudo apt-get install quilt qemu-user-static debootstrap libarchive-tools qemu-utils
+            sudo apt-get install quilt qemu-user-static debootstrap libarchive-tools qemu-utils arch-test
             sudo --preserve-env=SSH_AUTH_SOCK,GH_TOKEN ./build.sh
 
       - name: Upload artifacts
