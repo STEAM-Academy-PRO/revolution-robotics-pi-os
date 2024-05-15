@@ -1,6 +1,6 @@
 # Pi OS builder
 
-Based on `pi-gen` rev `92791ed729eaabb4a686609b792a225c78bc4f2e`
+Based on `pi-gen` rev `01933f35f43c6175b2d180832f50226f84f5e672`
 
 ## Config
 
@@ -53,12 +53,6 @@ The following environment variables are supported:
    If you require the use of an apt proxy, set it here.  This proxy setting
    will not be included in the image, making it safe to use an `apt-cacher` or
    similar package for development.
-
-   If you have Docker installed, you can set up a local apt caching proxy to
-   like speed up subsequent builds like this:
-
-       docker-compose up -d
-       echo 'APT_PROXY=http://172.17.0.1:3142' >> config
 
  * `BASE_DIR`  (Default: location of `build.sh`)
 
