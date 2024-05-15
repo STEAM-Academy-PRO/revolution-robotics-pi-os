@@ -27,8 +27,8 @@ rm -rf /etc/issue
 ln -s /tmp/etc-issue /etc/issue
 
 echo "  ROize NetworkManager"
-mv /etc/NetworkManager/system-connections /boot/system-connections
-ln -s /boot/system-connections /etc/NetworkManager/system-connections
+mv /etc/NetworkManager/system-connections /boot/firmware/system-connections
+ln -s /boot/firmware/system-connections /etc/NetworkManager/system-connections
 
 #FIXME: regenerate_ssh_host_keys.service wants to write to /etc/ssh so we disable it for now
 /usr/bin/ssh-keygen -A -v
