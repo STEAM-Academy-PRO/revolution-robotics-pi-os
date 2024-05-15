@@ -16,12 +16,6 @@ sudo apt remove -y man-db
 
 sudo apt-get autoremove --purge -y
 
-echo "  Relocate dhcp related files"
-mv /etc/resolv.conf /var/run/resolv.conf && ln -s /var/run/resolv.conf /etc/resolv.conf
-sed -i 's#PIDFile=/run/dhcpcd.pid#PIDFile=/var/run/dhcpcd.pid#' /lib/systemd/system/dhcpcd.service
-# Disable wait for dhcp
-rm -f /etc/systemd/system/dhcpcd.service.d/wait.conf
-
 echo "  Stop mask systemd timers/services"
 systemctl disable systemd-tmpfiles-clean.timer systemd-tmpfiles-clean
 systemctl mask systemd-update-utmp systemd-update-utmp-runlevel
@@ -32,9 +26,9 @@ echo "  ROize prelogin-qr"
 rm -rf /etc/issue
 ln -s /tmp/etc-issue /etc/issue
 
-echo "  ROize wpa_supplicant.conf"
-mv /etc/wpa_supplicant/wpa_supplicant.conf /boot/wpa_supplicant.conf
-ln -s /boot/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf
+echo "  ROize NetworkManager"
+mv /etc/NetworkManager/system-connections /boot/system-connections
+ln -s /boot/system-connections /etc/NetworkManager/system-connections
 
 #FIXME: regenerate_ssh_host_keys.service wants to write to /etc/ssh so we disable it for now
 /usr/bin/ssh-keygen -A -v
