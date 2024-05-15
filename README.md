@@ -1,6 +1,6 @@
 # Pi OS builder
 
-Based on `pi-gen` rev `01933f35f43c6175b2d180832f50226f84f5e672`
+Based on `pi-gen` rev `9d9d0637909a506c82cb76cea90a94a958b1732c`
 
 ## Config
 
@@ -40,7 +40,7 @@ The following environment variables are supported:
     that the network block device is not disconnected correctly after the Docker process has
     ended abnormally. In that case see [Disconnect an image if something went wrong](#Disconnect-an-image-if-something-went-wrong)
 
-* `RELEASE` (Default: bullseye)
+* `RELEASE` (Default: bookworm)
 
    The release version to build images against. Valid values are any supported
    Debian release. However, since different releases will have different sets of
