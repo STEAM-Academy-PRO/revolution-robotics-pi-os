@@ -173,8 +173,8 @@ rm -rf tempRF
 
 on_chroot << EOF
 echo "  Install requirements"
-GIT_SSH_COMMAND='ssh -o StrictHostKeyChecking=no' pip3 install -r /home/pi/requirements.txt
-GIT_SSH_COMMAND='ssh -o StrictHostKeyChecking=no' pip3 install -r /home/pi/requirements_pi_dev.txt
+pip3 install -r /home/pi/requirements.txt
+pip3 install -r /home/pi/requirements_pi_dev.txt
 
 rm /home/pi/requirements.txt
 rm /home/pi/requirements_pi_dev.txt
