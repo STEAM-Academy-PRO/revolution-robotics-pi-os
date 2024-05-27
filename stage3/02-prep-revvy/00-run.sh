@@ -173,8 +173,8 @@ rm -rf tempRF
 
 on_chroot << EOF
 echo "  Install requirements"
-pip3 install -r /home/pi/requirements.txt
-pip3 install -r /home/pi/requirements_pi_dev.txt
+GIT_SSH_COMMAND='ssh -o StrictHostKeyChecking=no' pip3 install -r /home/pi/requirements.txt
+GIT_SSH_COMMAND='ssh -o StrictHostKeyChecking=no' pip3 install -r /home/pi/requirements_pi_dev.txt
 
 rm /home/pi/requirements.txt
 rm /home/pi/requirements_pi_dev.txt
@@ -186,8 +186,11 @@ echo "  Set the data directory to be writeable by the framework"
 chown pi:pi -R "/home/pi/RevvyFramework/user"
 chmod 775 -R "/home/pi/RevvyFramework/user"
 
-echo "  Enable Revvy service(s) "
+echo "  Enable Revvy service(s)"
 systemctl enable revvy
+
+echo "  Remove temporarily installed git"
+sudo apt remove -y git
 EOF
 
 setcap 'cap_net_raw+eip' "${ROOTFS_DIR}/usr/bin/python3.9"
