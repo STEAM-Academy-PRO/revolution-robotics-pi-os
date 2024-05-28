@@ -2,8 +2,6 @@
 Description=Revvy service
 Before=ifupdown-pre.service avahi-daemon.service
 DefaultDependencies=no
-After=dev-serial1.device
-Requires=dev-serial1.device
 
 [Service]
 Type=simple
