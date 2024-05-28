@@ -10,7 +10,7 @@
  #dtparam=i2s=on
  #dtparam=spi=on
  
-@@ -50,21 +51,39 @@
+@@ -50,21 +51,42 @@
  # Additional overlays and parameters are documented /boot/overlays/README
  
  # Enable audio (loads snd_bcm2835)
@@ -49,6 +49,9 @@
 +disable_poe_fan=1
 +enable_uart=0
 +force_eeprom_read=0
++
++# Disable kernel bluetooth, enables serial1 for hciuart
++dtparam=krnbt=off
 +
  [cm4]
  # Enable host mode on the 2711 built-in XHCI USB controller.
