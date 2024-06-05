@@ -3,7 +3,7 @@ ENABLE_SSH=1 # TODO do not enable SSH on production robots by default
 export FIRST_USER_PASS=${FIRST_USER_PASS:-123}
 
 # set FIRMWARE_RELEASE for releases
-export FIRMWARE_RELEASE=v1654
+export FIRMWARE_RELEASE=v1659
 
 # set FIRMWARE_REV for testing
 #export FIRMWARE_REV=tags/v1284
