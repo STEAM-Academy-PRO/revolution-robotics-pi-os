@@ -106,12 +106,6 @@ EOF
 
 rm -rf WiringPi
 
-# Image version
-
-echo `git rev-list --count HEAD` > "/tmp/os_version"
-install -m 644 /tmp/os_version "${ROOTFS_DIR}/home/pi/RevvyFramework/os_version"
-rm /tmp/os_version
-
 # Revvy service and launcher
 
 echo "  Deploy python service "
@@ -175,6 +169,12 @@ fi
 echo " Deleting tempRF directory"
 cd ..
 rm -rf tempRF
+
+echo " Create file with image version"
+
+echo `git rev-list --count HEAD` > "/tmp/os_version"
+install -m 644 /tmp/os_version "${ROOTFS_DIR}/home/pi/RevvyFramework/os_version"
+rm /tmp/os_version
 
 
 on_chroot << EOF
