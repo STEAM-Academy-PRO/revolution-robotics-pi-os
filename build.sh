@@ -247,6 +247,9 @@ export CLEAN
 export IMG_NAME
 export APT_PROXY
 
+# TESTER_DIR is the peripheral test package to be included in this image
+export TESTER_DIR=$1
+
 export STAGE
 export STAGE_DIR
 export STAGE_WORK_DIR
@@ -254,7 +257,7 @@ export PREV_STAGE
 export PREV_STAGE_DIR
 export ROOTFS_DIR
 export PREV_ROOTFS_DIR
-export IMG_SUFFIX
+export IMG_SUFFIX="-${TESTER_DIR}"
 export EXPORT_DIR
 export EXPORT_ROOTFS_DIR
 

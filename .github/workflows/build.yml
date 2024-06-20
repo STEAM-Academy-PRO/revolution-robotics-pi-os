@@ -30,7 +30,10 @@ jobs:
         run: |
             sudo apt-get update
             sudo apt-get install quilt qemu-user-static debootstrap libarchive-tools qemu-utils
-            sudo --preserve-env=SSH_AUTH_SOCK,GH_TOKEN ./build.sh
+            sudo --preserve-env=SSH_AUTH_SOCK,GH_TOKEN ./build.sh Button
+            sudo --preserve-env=SSH_AUTH_SOCK,GH_TOKEN ./build.sh Distance
+            sudo --preserve-env=SSH_AUTH_SOCK,GH_TOKEN ./build.sh Color
+            sudo --preserve-env=SSH_AUTH_SOCK,GH_TOKEN ./build.sh Motor
 
       - name: Upload image to release
         uses: svenstaro/upload-release-action@v2

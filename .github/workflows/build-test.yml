@@ -15,7 +15,7 @@ concurrency:
   group: ${{ github.workflow }}
 
 jobs:
-  build:
+  build-button:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -27,15 +27,98 @@ jobs:
         with:
             ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: build
+      - name: dependencies
         run: |
             sudo apt-get update
             sudo apt-get install quilt qemu-user-static debootstrap libarchive-tools qemu-utils
-            sudo --preserve-env=SSH_AUTH_SOCK,GH_TOKEN ./build.sh
+
+      - name: Button
+        run: sudo --preserve-env=SSH_AUTH_SOCK,GH_TOKEN ./build.sh Button
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: image
+          name: tester-image-button
           path: deploy/*
-          retention-days: 1
+          retention-days: 30
+
+  build-distance:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: dependencies
+        run: |
+            sudo apt-get update
+            sudo apt-get install quilt qemu-user-static debootstrap libarchive-tools qemu-utils
+
+      - name: Distance
+        run: sudo --preserve-env=SSH_AUTH_SOCK,GH_TOKEN ./build.sh Distance
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tester-image-distance
+          path: deploy/*
+          retention-days: 30
+
+  build-color:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: dependencies
+        run: |
+            sudo apt-get update
+            sudo apt-get install quilt qemu-user-static debootstrap libarchive-tools qemu-utils
+
+      - name: Color
+        run: sudo --preserve-env=SSH_AUTH_SOCK,GH_TOKEN ./build.sh Color
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tester-image-color
+          path: deploy/*
+          retention-days: 30
+
+  build-motor:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: dependencies
+        run: |
+            sudo apt-get update
+            sudo apt-get install quilt qemu-user-static debootstrap libarchive-tools qemu-utils
+
+      - name: Motor
+        run: sudo --preserve-env=SSH_AUTH_SOCK,GH_TOKEN ./build.sh Motor
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tester-image-motor
+          path: deploy/*
+          retention-days: 30
