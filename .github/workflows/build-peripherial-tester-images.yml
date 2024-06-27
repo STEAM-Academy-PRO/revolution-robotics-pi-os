@@ -1,0 +1,129 @@
+name: Build Peripherial tester OS images
+
+on:
+  workflow_dispatch:
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GH_TOKEN: ${{ secrets.GH_TOKEN_MIND }}
+
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.workflow }}
+
+jobs:
+  build-button-peripherial-tester:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    if: github.ref == 'refs/heads/peripherial-testers'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: dependencies
+        run: |
+            sudo apt-get update
+            sudo apt-get install quilt qemu-user-static debootstrap libarchive-tools qemu-utils
+
+      - name: Button
+        run: sudo --preserve-env=SSH_AUTH_SOCK,GH_TOKEN ./build.sh Button
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: button-peripherial-tester-image
+          path: deploy/*
+          retention-days: 30
+
+  build-distance-peripherial-tester:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    if: github.ref == 'refs/heads/peripherial-testers'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: dependencies
+        run: |
+            sudo apt-get update
+            sudo apt-get install quilt qemu-user-static debootstrap libarchive-tools qemu-utils
+
+      - name: Distance
+        run: sudo --preserve-env=SSH_AUTH_SOCK,GH_TOKEN ./build.sh Distance
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: distance-peripherial-tester-image
+          path: deploy/*
+          retention-days: 30
+
+  build-color-peripherial-tester:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    if: github.ref == 'refs/heads/peripherial-testers'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: dependencies
+        run: |
+            sudo apt-get update
+            sudo apt-get install quilt qemu-user-static debootstrap libarchive-tools qemu-utils
+
+      - name: Color
+        run: sudo --preserve-env=SSH_AUTH_SOCK,GH_TOKEN ./build.sh Color
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: color-peripherial-tester-image
+          path: deploy/*
+          retention-days: 30
+
+  build-motor-peripherial-tester:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    if: github.ref == 'refs/heads/peripherial-testers'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: dependencies
+        run: |
+            sudo apt-get update
+            sudo apt-get install quilt qemu-user-static debootstrap libarchive-tools qemu-utils
+
+      - name: Motor
+        run: sudo --preserve-env=SSH_AUTH_SOCK,GH_TOKEN ./build.sh Motor
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: motor-peripherial-tester-image
+          path: deploy/*
+          retention-days: 30
