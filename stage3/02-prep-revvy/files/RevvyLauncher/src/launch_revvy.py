@@ -253,7 +253,7 @@ def install_update_package(install_directory, filename, remove_source: bool = Tr
     target_dir = os.path.join(install_directory, package_folder_name)
 
     if os.path.isdir(target_dir):
-        log(yellow("Trying to install an installed version, skipping"))
+        log(yellow(f"{version_to_install} is already installed, skipping"))
         # we don't want to install this package, remove sources
         shutil.rmtree(tmp_dir)
         if remove_source:
